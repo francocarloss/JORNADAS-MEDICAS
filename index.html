@@ -8,6 +8,7 @@
     <!-- Librerías -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
@@ -218,41 +219,105 @@
         /* Dashboard Styles */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 25px;
+            background: white;
+            color: var(--dark-color);
+            padding: 20px;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             text-align: center;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            border-left: 4px solid;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
 
         .stat-card h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            opacity: 0.9;
+            font-size: 13px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-card .stat-value {
-            font-size: 48px;
+            font-size: 36px;
             font-weight: 700;
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .stat-card .stat-label {
-            font-size: 14px;
-            opacity: 0.8;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Colores de borde para cada tarjeta */
+        .stat-card-primary {
+            border-left-color: #2c3e50;
+        }
+        .stat-card-primary h3 {
+            color: #2c3e50;
+        }
+        .stat-card-primary .stat-value {
+            color: #2c3e50;
+        }
+
+        .stat-card-success {
+            border-left-color: #27ae60;
+        }
+        .stat-card-success h3 {
+            color: #27ae60;
+        }
+        .stat-card-success .stat-value {
+            color: #27ae60;
+        }
+
+        .stat-card-danger {
+            border-left-color: #c0392b;
+        }
+        .stat-card-danger h3 {
+            color: #c0392b;
+        }
+        .stat-card-danger .stat-value {
+            color: #c0392b;
+        }
+
+        .stat-card-info {
+            border-left-color: #2980b9;
+        }
+        .stat-card-info h3 {
+            color: #2980b9;
+        }
+        .stat-card-info .stat-value {
+            color: #2980b9;
+        }
+
+        .stat-card-warning {
+            border-left-color: #d68910;
+        }
+        .stat-card-warning h3 {
+            color: #d68910;
+        }
+        .stat-card-warning .stat-value {
+            color: #d68910;
+        }
+
+        .stat-card-secondary {
+            border-left-color: #7f8c8d;
+        }
+        .stat-card-secondary h3 {
+            color: #7f8c8d;
+        }
+        .stat-card-secondary .stat-value {
+            color: #7f8c8d;
         }
 
         .chart-container {
@@ -869,32 +934,32 @@
                 
                 <!-- Tarjetas de estadísticas -->
                 <div class="dashboard-grid">
-                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <div class="stat-card stat-card-primary">
                         <h3>Total de Pacientes</h3>
                         <div class="stat-value" id="totalPacientes">0</div>
                         <div class="stat-label">Registros totales</div>
                     </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                    <div class="stat-card stat-card-success">
                         <h3>Con DPI</h3>
                         <div class="stat-value" id="conDPI">0</div>
                         <div class="stat-label">Pacientes registrados</div>
                     </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                    <div class="stat-card stat-card-danger">
                         <h3>Sin DPI</h3>
                         <div class="stat-value" id="sinDPI">0</div>
                         <div class="stat-label">Pacientes sin registrar</div>
                     </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                    <div class="stat-card stat-card-info">
                         <h3>Con Producto Finca</h3>
                         <div class="stat-value" id="conProductoFinca">0</div>
                         <div class="stat-label">Clientes existentes</div>
                     </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #1a3a60, #2c5282);">
+                    <div class="stat-card stat-card-secondary">
                         <h3>Mayores de Edad</h3>
                         <div class="stat-value" id="mayoresEdad">0</div>
                         <div class="stat-label">Pacientes ≥ 18 años</div>
                     </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                    <div class="stat-card stat-card-warning">
                         <h3>Menores de Edad</h3>
                         <div class="stat-value" id="menoresEdad">0</div>
                         <div class="stat-label">Pacientes < 18 años</div>
@@ -1490,18 +1555,18 @@
                         label: 'Número de Pacientes',
                         data: Object.values(comoEnteroData),
                         backgroundColor: [
-                            'rgba(26, 58, 96, 0.85)',      // Azul corporativo oscuro
+                            'rgba(44, 62, 80, 0.85)',      // Gris azulado oscuro
                             'rgba(52, 152, 219, 0.85)',    // Azul brillante
-                            'rgba(243, 156, 18, 0.85)',    // Naranja profesional
+                            'rgba(214, 137, 16, 0.85)',    // Naranja dorado
                             'rgba(22, 160, 133, 0.85)',    // Verde turquesa
-                            'rgba(155, 89, 182, 0.85)'     // Morado corporativo
+                            'rgba(142, 68, 173, 0.85)'     // Morado suave
                         ],
                         borderColor: [
-                            'rgba(26, 58, 96, 1)',
+                            'rgba(44, 62, 80, 1)',
                             'rgba(52, 152, 219, 1)',
-                            'rgba(243, 156, 18, 1)',
+                            'rgba(214, 137, 16, 1)',
                             'rgba(22, 160, 133, 1)',
-                            'rgba(155, 89, 182, 1)'
+                            'rgba(142, 68, 173, 1)'
                         ],
                         borderWidth: 2,
                         borderRadius: 5
@@ -1519,12 +1584,23 @@
                             display: false
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
                             padding: 12,
                             titleColor: '#fff',
                             bodyColor: '#fff',
                             borderColor: 'rgba(52, 152, 219, 0.8)',
                             borderWidth: 1
+                        },
+                        datalabels: {
+                            color: '#2c3e50',
+                            font: {
+                                weight: 'bold',
+                                size: 13
+                            },
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 4,
+                            formatter: (value) => value
                         }
                     },
                     scales: {
@@ -1532,7 +1608,10 @@
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 1,
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11
+                                }
                             },
                             grid: {
                                 color: 'rgba(0, 0, 0, 0.05)'
@@ -1540,14 +1619,18 @@
                         },
                         y: {
                             ticks: {
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11
+                                }
                             },
                             grid: {
                                 display: false
                             }
                         }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
 
@@ -1568,11 +1651,11 @@
                         label: 'Número de Pacientes',
                         data: [conDPI, sinDPI],
                         backgroundColor: [
-                            'rgba(22, 160, 133, 0.85)',    // Verde turquesa
-                            'rgba(192, 57, 43, 0.85)'      // Rojo corporativo
+                            'rgba(39, 174, 96, 0.85)',     // Verde oscuro
+                            'rgba(192, 57, 43, 0.85)'      // Rojo oscuro
                         ],
                         borderColor: [
-                            'rgba(22, 160, 133, 1)',
+                            'rgba(39, 174, 96, 1)',
                             'rgba(192, 57, 43, 1)'
                         ],
                         borderWidth: 2,
@@ -1587,12 +1670,23 @@
                             display: false
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
                             padding: 12,
                             titleColor: '#fff',
                             bodyColor: '#fff',
                             borderColor: 'rgba(52, 152, 219, 0.8)',
                             borderWidth: 1
+                        },
+                        datalabels: {
+                            color: '#2c3e50',
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            },
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 4,
+                            formatter: (value) => value
                         }
                     },
                     scales: {
@@ -1600,7 +1694,10 @@
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 1,
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11
+                                }
                             },
                             grid: {
                                 color: 'rgba(0, 0, 0, 0.05)'
@@ -1608,14 +1705,19 @@
                         },
                         x: {
                             ticks: {
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11,
+                                    weight: '600'
+                                }
                             },
                             grid: {
                                 display: false
                             }
                         }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
 
@@ -1632,23 +1734,23 @@
             if (charts.chart3) charts.chart3.destroy();
             
             const colors = [
-                'rgba(26, 58, 96, 0.85)',
+                'rgba(44, 62, 80, 0.85)',
                 'rgba(52, 152, 219, 0.85)',
-                'rgba(22, 160, 133, 0.85)',
-                'rgba(243, 156, 18, 0.85)',
-                'rgba(155, 89, 182, 0.85)',
-                'rgba(231, 76, 60, 0.85)',
-                'rgba(52, 73, 94, 0.85)'
+                'rgba(39, 174, 96, 0.85)',
+                'rgba(214, 137, 16, 0.85)',
+                'rgba(142, 68, 173, 0.85)',
+                'rgba(192, 57, 43, 0.85)',
+                'rgba(127, 140, 141, 0.85)'
             ];
             
             const borderColors = [
-                'rgba(26, 58, 96, 1)',
+                'rgba(44, 62, 80, 1)',
                 'rgba(52, 152, 219, 1)',
-                'rgba(22, 160, 133, 1)',
-                'rgba(243, 156, 18, 1)',
-                'rgba(155, 89, 182, 1)',
-                'rgba(231, 76, 60, 1)',
-                'rgba(52, 73, 94, 1)'
+                'rgba(39, 174, 96, 1)',
+                'rgba(214, 137, 16, 1)',
+                'rgba(142, 68, 173, 1)',
+                'rgba(192, 57, 43, 1)',
+                'rgba(127, 140, 141, 1)'
             ];
             
             charts.chart3 = new Chart(ctx, {
@@ -1672,12 +1774,23 @@
                             display: false
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
                             padding: 12,
                             titleColor: '#fff',
                             bodyColor: '#fff',
                             borderColor: 'rgba(52, 152, 219, 0.8)',
                             borderWidth: 1
+                        },
+                        datalabels: {
+                            color: '#2c3e50',
+                            font: {
+                                weight: 'bold',
+                                size: 13
+                            },
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 4,
+                            formatter: (value) => value
                         }
                     },
                     scales: {
@@ -1685,7 +1798,10 @@
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 1,
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11
+                                }
                             },
                             grid: {
                                 color: 'rgba(0, 0, 0, 0.05)'
@@ -1695,14 +1811,18 @@
                             ticks: {
                                 color: '#555',
                                 maxRotation: 45,
-                                minRotation: 45
+                                minRotation: 45,
+                                font: {
+                                    size: 10
+                                }
                             },
                             grid: {
                                 display: false
                             }
                         }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
 
@@ -1726,16 +1846,16 @@
                         label: 'Número de Pacientes',
                         data: Object.values(especialidadData),
                         backgroundColor: [
-                            'rgba(243, 156, 18, 0.85)',    // Naranja profesional
+                            'rgba(214, 137, 16, 0.85)',    // Naranja dorado
                             'rgba(52, 152, 219, 0.85)',    // Azul brillante
-                            'rgba(231, 76, 60, 0.85)',     // Rojo corporativo
-                            'rgba(22, 160, 133, 0.85)'     // Verde turquesa
+                            'rgba(192, 57, 43, 0.85)',     // Rojo oscuro
+                            'rgba(39, 174, 96, 0.85)'      // Verde oscuro
                         ],
                         borderColor: [
-                            'rgba(243, 156, 18, 1)',
+                            'rgba(214, 137, 16, 1)',
                             'rgba(52, 152, 219, 1)',
-                            'rgba(231, 76, 60, 1)',
-                            'rgba(22, 160, 133, 1)'
+                            'rgba(192, 57, 43, 1)',
+                            'rgba(39, 174, 96, 1)'
                         ],
                         borderWidth: 2,
                         borderRadius: 5
@@ -1749,12 +1869,23 @@
                             display: false
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
                             padding: 12,
                             titleColor: '#fff',
                             bodyColor: '#fff',
                             borderColor: 'rgba(52, 152, 219, 0.8)',
                             borderWidth: 1
+                        },
+                        datalabels: {
+                            color: '#2c3e50',
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            },
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 4,
+                            formatter: (value) => value
                         }
                     },
                     scales: {
@@ -1762,7 +1893,10 @@
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 1,
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11
+                                }
                             },
                             grid: {
                                 color: 'rgba(0, 0, 0, 0.05)'
@@ -1770,14 +1904,18 @@
                         },
                         x: {
                             ticks: {
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11
+                                }
                             },
                             grid: {
                                 display: false
                             }
                         }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
 
@@ -1787,6 +1925,7 @@
             
             const conProducto = records.filter(r => r.productoFinca === 'SI').length;
             const sinProducto = records.filter(r => r.productoFinca === 'NO').length;
+            const total = conProducto + sinProducto;
 
             if (charts.chart5) charts.chart5.destroy();
             
@@ -1797,12 +1936,12 @@
                     datasets: [{
                         data: [sinProducto, conProducto],
                         backgroundColor: [
-                            'rgba(52, 73, 94, 0.85)',      // Gris corporativo oscuro
-                            'rgba(46, 204, 113, 0.85)'     // Verde éxito
+                            'rgba(127, 140, 141, 0.85)',   // Gris medio
+                            'rgba(39, 174, 96, 0.85)'      // Verde oscuro
                         ],
                         borderColor: [
-                            'rgba(52, 73, 94, 1)',
-                            'rgba(46, 204, 113, 1)'
+                            'rgba(127, 140, 141, 1)',
+                            'rgba(39, 174, 96, 1)'
                         ],
                         borderWidth: 2
                     }]
@@ -1815,7 +1954,7 @@
                             position: 'bottom',
                             labels: {
                                 font: {
-                                    size: 14,
+                                    size: 13,
                                     weight: '600'
                                 },
                                 color: '#555',
@@ -1823,15 +1962,36 @@
                             }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
                             padding: 12,
                             titleColor: '#fff',
                             bodyColor: '#fff',
                             borderColor: 'rgba(52, 152, 219, 0.8)',
-                            borderWidth: 1
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold',
+                                size: 16
+                            },
+                            formatter: (value, ctx) => {
+                                if (value === 0) return '';
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${value}\n(${percentage}%)`;
+                            }
                         }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
 
@@ -1873,12 +2033,12 @@
                         label: 'Número de Pacientes',
                         data: [mayores, menores],
                         backgroundColor: [
-                            'rgba(26, 58, 96, 0.85)',      // Azul corporativo oscuro
-                            'rgba(243, 156, 18, 0.85)'     // Naranja profesional
+                            'rgba(44, 62, 80, 0.85)',      // Gris azulado oscuro
+                            'rgba(214, 137, 16, 0.85)'     // Naranja dorado
                         ],
                         borderColor: [
-                            'rgba(26, 58, 96, 1)',
-                            'rgba(243, 156, 18, 1)'
+                            'rgba(44, 62, 80, 1)',
+                            'rgba(214, 137, 16, 1)'
                         ],
                         borderWidth: 2,
                         borderRadius: 5
@@ -1892,7 +2052,7 @@
                             display: false
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
                             padding: 12,
                             titleColor: '#fff',
                             bodyColor: '#fff',
@@ -1905,6 +2065,21 @@
                                     return `Pacientes: ${context.parsed.y} (${percentage}%)`;
                                 }
                             }
+                        },
+                        datalabels: {
+                            color: '#2c3e50',
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            },
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 4,
+                            formatter: (value) => {
+                                const total = mayores + menores;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${value} (${percentage}%)`;
+                            }
                         }
                     },
                     scales: {
@@ -1912,7 +2087,10 @@
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 1,
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11
+                                }
                             },
                             grid: {
                                 color: 'rgba(0, 0, 0, 0.05)'
@@ -1920,14 +2098,18 @@
                         },
                         x: {
                             ticks: {
-                                color: '#555'
+                                color: '#555',
+                                font: {
+                                    size: 11
+                                }
                             },
                             grid: {
                                 display: false
                             }
                         }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
 
