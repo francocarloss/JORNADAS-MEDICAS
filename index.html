@@ -889,6 +889,16 @@
                         <div class="stat-value" id="conProductoFinca">0</div>
                         <div class="stat-label">Clientes existentes</div>
                     </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #1a3a60, #2c5282);">
+                        <h3>Mayores de Edad</h3>
+                        <div class="stat-value" id="mayoresEdad">0</div>
+                        <div class="stat-label">Pacientes ≥ 18 años</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                        <h3>Menores de Edad</h3>
+                        <div class="stat-value" id="menoresEdad">0</div>
+                        <div class="stat-label">Pacientes < 18 años</div>
+                    </div>
                 </div>
 
                 <!-- Controles de exportación -->
@@ -970,6 +980,23 @@
                     </div>
                     <div class="chart-wrapper">
                         <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container" id="chart6Container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Mayores vs Menores de Edad</h3>
+                        <div class="chart-actions">
+                            <button class="btn btn-sm btn-danger" onclick="exportChartToPdf('chart6')">
+                                <span class="btn-icon">📄</span> PDF
+                            </button>
+                            <button class="btn btn-sm btn-info" onclick="exportChartToImage('chart6')">
+                                <span class="btn-icon">🖼️</span> Imagen
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="chart6"></canvas>
                     </div>
                 </div>
 
@@ -1403,10 +1430,35 @@
             const sinDPI = totalPacientes - conDPI;
             const conProducto = records.filter(r => r.productoFinca === 'SI').length;
 
+            // Calcular mayores y menores de edad
+            let mayores = 0;
+            let menores = 0;
+            const today = new Date();
+            
+            records.forEach(r => {
+                if (r.fechaNacimiento && r.fechaNacimiento.trim() !== '') {
+                    const birthDate = new Date(r.fechaNacimiento);
+                    const age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    
+                    const ageAdjusted = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) 
+                        ? age - 1 
+                        : age;
+                    
+                    if (ageAdjusted >= 18) {
+                        mayores++;
+                    } else {
+                        menores++;
+                    }
+                }
+            });
+
             document.getElementById('totalPacientes').textContent = totalPacientes;
             document.getElementById('conDPI').textContent = conDPI;
             document.getElementById('sinDPI').textContent = sinDPI;
             document.getElementById('conProductoFinca').textContent = conProducto;
+            document.getElementById('mayoresEdad').textContent = mayores;
+            document.getElementById('menoresEdad').textContent = menores;
         }
 
         function updateCharts() {
@@ -1414,6 +1466,7 @@
             createChart2(); // Leads (DPI)
             createChart3(); // Ocupación
             createChart4(); // Especialidad
+            createChart6(); // Mayores vs Menores de Edad
             createChart5(); // Producto Finca
         }
 
@@ -1437,20 +1490,21 @@
                         label: 'Número de Pacientes',
                         data: Object.values(comoEnteroData),
                         backgroundColor: [
-                            'rgba(54, 162, 235, 0.8)',
-                            'rgba(255, 99, 132, 0.8)',
-                            'rgba(255, 206, 86, 0.8)',
-                            'rgba(75, 192, 192, 0.8)',
-                            'rgba(153, 102, 255, 0.8)'
+                            'rgba(26, 58, 96, 0.85)',      // Azul corporativo oscuro
+                            'rgba(52, 152, 219, 0.85)',    // Azul brillante
+                            'rgba(243, 156, 18, 0.85)',    // Naranja profesional
+                            'rgba(22, 160, 133, 0.85)',    // Verde turquesa
+                            'rgba(155, 89, 182, 0.85)'     // Morado corporativo
                         ],
                         borderColor: [
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)'
+                            'rgba(26, 58, 96, 1)',
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(243, 156, 18, 1)',
+                            'rgba(22, 160, 133, 1)',
+                            'rgba(155, 89, 182, 1)'
                         ],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 5
                     }]
                 },
                 options: {
@@ -1463,13 +1517,33 @@
                         },
                         title: {
                             display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(52, 152, 219, 0.8)',
+                            borderWidth: 1
                         }
                     },
                     scales: {
                         x: {
                             beginAtZero: true,
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                color: '#555'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#555'
+                            },
+                            grid: {
+                                display: false
                             }
                         }
                     }
@@ -1494,14 +1568,15 @@
                         label: 'Número de Pacientes',
                         data: [conDPI, sinDPI],
                         backgroundColor: [
-                            'rgba(75, 192, 192, 0.8)',
-                            'rgba(255, 99, 132, 0.8)'
+                            'rgba(22, 160, 133, 0.85)',    // Verde turquesa
+                            'rgba(192, 57, 43, 0.85)'      // Rojo corporativo
                         ],
                         borderColor: [
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(255, 99, 132, 1)'
+                            'rgba(22, 160, 133, 1)',
+                            'rgba(192, 57, 43, 1)'
                         ],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 5
                     }]
                 },
                 options: {
@@ -1510,13 +1585,33 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(52, 152, 219, 0.8)',
+                            borderWidth: 1
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                color: '#555'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#555'
+                            },
+                            grid: {
+                                display: false
                             }
                         }
                     }
@@ -1536,6 +1631,26 @@
 
             if (charts.chart3) charts.chart3.destroy();
             
+            const colors = [
+                'rgba(26, 58, 96, 0.85)',
+                'rgba(52, 152, 219, 0.85)',
+                'rgba(22, 160, 133, 0.85)',
+                'rgba(243, 156, 18, 0.85)',
+                'rgba(155, 89, 182, 0.85)',
+                'rgba(231, 76, 60, 0.85)',
+                'rgba(52, 73, 94, 0.85)'
+            ];
+            
+            const borderColors = [
+                'rgba(26, 58, 96, 1)',
+                'rgba(52, 152, 219, 1)',
+                'rgba(22, 160, 133, 1)',
+                'rgba(243, 156, 18, 1)',
+                'rgba(155, 89, 182, 1)',
+                'rgba(231, 76, 60, 1)',
+                'rgba(52, 73, 94, 1)'
+            ];
+            
             charts.chart3 = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1543,9 +1658,10 @@
                     datasets: [{
                         label: 'Número de Pacientes',
                         data: Object.values(ocupacionData),
-                        backgroundColor: 'rgba(153, 102, 255, 0.8)',
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        borderWidth: 2
+                        backgroundColor: colors.slice(0, Object.keys(ocupacionData).length),
+                        borderColor: borderColors.slice(0, Object.keys(ocupacionData).length),
+                        borderWidth: 2,
+                        borderRadius: 5
                     }]
                 },
                 options: {
@@ -1554,13 +1670,35 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(52, 152, 219, 0.8)',
+                            borderWidth: 1
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                color: '#555'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#555',
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: {
+                                display: false
                             }
                         }
                     }
@@ -1588,18 +1726,19 @@
                         label: 'Número de Pacientes',
                         data: Object.values(especialidadData),
                         backgroundColor: [
-                            'rgba(255, 159, 64, 0.8)',
-                            'rgba(54, 162, 235, 0.8)',
-                            'rgba(255, 99, 132, 0.8)',
-                            'rgba(75, 192, 192, 0.8)'
+                            'rgba(243, 156, 18, 0.85)',    // Naranja profesional
+                            'rgba(52, 152, 219, 0.85)',    // Azul brillante
+                            'rgba(231, 76, 60, 0.85)',     // Rojo corporativo
+                            'rgba(22, 160, 133, 0.85)'     // Verde turquesa
                         ],
                         borderColor: [
-                            'rgba(255, 159, 64, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(75, 192, 192, 1)'
+                            'rgba(243, 156, 18, 1)',
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(231, 76, 60, 1)',
+                            'rgba(22, 160, 133, 1)'
                         ],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 5
                     }]
                 },
                 options: {
@@ -1608,13 +1747,33 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(52, 152, 219, 0.8)',
+                            borderWidth: 1
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                color: '#555'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#555'
+                            },
+                            grid: {
+                                display: false
                             }
                         }
                     }
@@ -1638,8 +1797,8 @@
                     datasets: [{
                         data: [sinProducto, conProducto],
                         backgroundColor: [
-                            'rgba(52, 73, 94, 0.8)',
-                            'rgba(46, 204, 113, 0.8)'
+                            'rgba(52, 73, 94, 0.85)',      // Gris corporativo oscuro
+                            'rgba(46, 204, 113, 0.85)'     // Verde éxito
                         ],
                         borderColor: [
                             'rgba(52, 73, 94, 1)',
@@ -1656,8 +1815,115 @@
                             position: 'bottom',
                             labels: {
                                 font: {
-                                    size: 14
+                                    size: 14,
+                                    weight: '600'
+                                },
+                                color: '#555',
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(52, 152, 219, 0.8)',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 6: Mayores vs Menores de Edad
+        function createChart6() {
+            const ctx = document.getElementById('chart6').getContext('2d');
+            
+            let mayores = 0;
+            let menores = 0;
+            
+            const today = new Date();
+            
+            records.forEach(r => {
+                if (r.fechaNacimiento && r.fechaNacimiento.trim() !== '') {
+                    const birthDate = new Date(r.fechaNacimiento);
+                    const age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    
+                    // Ajuste para edad exacta
+                    const ageAdjusted = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) 
+                        ? age - 1 
+                        : age;
+                    
+                    if (ageAdjusted >= 18) {
+                        mayores++;
+                    } else {
+                        menores++;
+                    }
+                }
+            });
+
+            if (charts.chart6) charts.chart6.destroy();
+            
+            charts.chart6 = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mayores de Edad (18+)', 'Menores de Edad (<18)'],
+                    datasets: [{
+                        label: 'Número de Pacientes',
+                        data: [mayores, menores],
+                        backgroundColor: [
+                            'rgba(26, 58, 96, 0.85)',      // Azul corporativo oscuro
+                            'rgba(243, 156, 18, 0.85)'     // Naranja profesional
+                        ],
+                        borderColor: [
+                            'rgba(26, 58, 96, 1)',
+                            'rgba(243, 156, 18, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 58, 96, 0.95)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(52, 152, 219, 0.8)',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = mayores + menores;
+                                    const percentage = total > 0 ? ((context.parsed.y / total) * 100).toFixed(1) : 0;
+                                    return `Pacientes: ${context.parsed.y} (${percentage}%)`;
                                 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#555'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#555'
+                            },
+                            grid: {
+                                display: false
                             }
                         }
                     }
