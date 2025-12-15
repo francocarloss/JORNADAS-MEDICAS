@@ -3,2901 +3,436 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Jornada Médica - Dashboard Interactivo</title>
-    
-    <!-- Librerías -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
+    <title>Diagramas de Flujo - Seguros Universales</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <style>
-        :root {
-            --primary-color: #1a3a5f;
-            --secondary-color: #3498db;
-            --accent-color: #f39c12;
-            --light-color: #f5f5f5;
-            --dark-color: #2c3e50;
-            --success-color: #2ecc71;
-            --danger-color: #e74c3c;
-            --info-color: #3498db;
-            --text-color: #333;
-            --border-radius: 8px;
-            --box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--text-color);
-            line-height: 1.6;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            padding: 20px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1800px;
             margin: 0 auto;
-            padding: 20px;
         }
 
-        header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #2c5282 100%);
-            color: white;
-            padding: 30px 0;
-            text-align: center;
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid #000000;
             margin-bottom: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 5px;
-            margin-bottom: 20px;
-            box-shadow: var(--box-shadow);
-            overflow-x: auto;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 15px 20px;
             text-align: center;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s;
-            font-weight: 600;
-            min-width: 120px;
-            color: var(--dark-color);
         }
 
-        .tab:hover {
-            background-color: var(--light-color);
+        .header h1 {
+            color: #1F4E78;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
 
-        .tab.active {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
+        .header p {
+            color: #666;
+            font-size: 1.2em;
         }
 
-        .tab-content {
+        .viz-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid #000000;
+            margin-bottom: 30px;
             display: none;
         }
 
-        .tab-content.active {
+        .viz-container.active {
             display: block;
         }
 
-        .form-container, .records-container, .dashboard-container {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .form-group {
+        .viz-title {
+            color: #1F4E78;
+            font-size: 1.8em;
             margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
         }
 
-        .form-row {
+        .viz-description {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        #sankeyCompleto {
+            width: 100%;
+            height: 850px;
+        }
+
+        .legend {
             display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
             flex-wrap: wrap;
-            margin: 0 -10px;
         }
 
-        .form-col {
-            flex: 1;
-            padding: 0 10px;
-            min-width: 250px;
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #000;
+        }
+
+        .legend-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #1F4E78;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #1F4E78;
             margin-bottom: 10px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e1e8ed;
-            border-radius: var(--border-radius);
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        input:disabled, select:disabled, textarea:disabled {
-            background-color: #e9ecef;
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: calc(100% - 12px) center;
-            padding-right: 35px;
-        }
-
-        .radio-group, .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            padding-top: 8px;
-        }
-
-        .radio-option, .checkbox-option {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 8px 12px;
-            border: 2px solid #e1e8ed;
-            border-radius: var(--border-radius);
-            transition: all 0.3s;
-        }
-
-        .radio-option:hover, .checkbox-option:hover {
-            background-color: var(--light-color);
-            border-color: var(--secondary-color);
-        }
-
-        .radio-option input:checked + span,
-        .checkbox-option input:checked + span {
-            font-weight: 700;
-        }
-
-        .radio-option input, .checkbox-option input {
-            width: auto;
-            margin-right: 8px;
-        }
-
-        .section-title {
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 10px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .section-title:first-of-type {
-            margin-top: 0;
-        }
-
-        /* Dashboard Styles */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            color: var(--dark-color);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            text-align: center;
-            transition: all 0.3s;
-            border-left: 4px solid;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-        }
-
-        .stat-card h3 {
-            font-size: 13px;
-            margin-bottom: 8px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-card .stat-value {
-            font-size: 36px;
-            font-weight: 700;
-            margin: 8px 0;
-        }
-
-        .stat-card .stat-label {
-            font-size: 12px;
+        .info-box ul {
+            margin-left: 20px;
             color: #666;
         }
 
-        /* Colores de borde para cada tarjeta */
-        .stat-card-primary {
-            border-left-color: #2c3e50;
-        }
-        .stat-card-primary h3 {
-            color: #2c3e50;
-        }
-        .stat-card-primary .stat-value {
-            color: #2c3e50;
+        .info-box li {
+            margin: 5px 0;
         }
 
-        .stat-card-success {
-            border-left-color: #27ae60;
-        }
-        .stat-card-success h3 {
-            color: #27ae60;
-        }
-        .stat-card-success .stat-value {
-            color: #27ae60;
-        }
-
-        .stat-card-danger {
-            border-left-color: #c0392b;
-        }
-        .stat-card-danger h3 {
-            color: #c0392b;
-        }
-        .stat-card-danger .stat-value {
-            color: #c0392b;
-        }
-
-        .stat-card-info {
-            border-left-color: #2980b9;
-        }
-        .stat-card-info h3 {
-            color: #2980b9;
-        }
-        .stat-card-info .stat-value {
-            color: #2980b9;
-        }
-
-        .stat-card-warning {
-            border-left-color: #d68910;
-        }
-        .stat-card-warning h3 {
-            color: #d68910;
-        }
-        .stat-card-warning .stat-value {
-            color: #d68910;
-        }
-
-        .stat-card-secondary {
-            border-left-color: #7f8c8d;
-        }
-        .stat-card-secondary h3 {
-            color: #7f8c8d;
-        }
-        .stat-card-secondary .stat-value {
-            color: #7f8c8d;
-        }
-
-        .chart-container {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--box-shadow);
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--light-color);
-        }
-
-        .chart-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .chart-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .chart-wrapper {
-            position: relative;
-            height: 400px;
-        }
-
-        .chart-wrapper canvas {
-            max-height: 400px !important;
-        }
-
-        /* Buttons */
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-top: 30px;
-            gap: 15px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 140px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), #2c5282);
-            color: white;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success-color), #27ae60);
-            color: white;
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--accent-color), #e67e22);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger-color), #c0392b);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-            color: white;
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, var(--info-color), #2980b9);
-            color: white;
-        }
-
-        .btn-icon {
-            margin-right: 8px;
-        }
-
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 14px;
-            min-width: auto;
-        }
-
-        /* Table Styles */
-        .table-container {
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-        }
-
-        thead {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-        }
-
-        th {
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e1e8ed;
-        }
-
-        tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            align-items: center;
-            justify-content: center;
-            overflow-y: auto;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 30px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--light-color);
-        }
-
-        .modal-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .close {
-            font-size: 32px;
-            cursor: pointer;
-            color: var(--dark-color);
-            transition: color 0.3s;
-        }
-
-        .close:hover {
-            color: var(--danger-color);
-        }
-
-        /* Alert */
-        .alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: var(--border-radius);
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 2000;
-            animation: slideInRight 0.3s ease;
-            max-width: 400px;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, var(--success-color), #27ae60);
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, var(--danger-color), #c0392b);
-        }
-
-        .alert-info {
-            background: linear-gradient(135deg, var(--info-color), #2980b9);
-        }
-
-        /* Export Controls */
-        .export-controls {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            border-left: 4px solid var(--info-color);
-        }
-
-        .export-controls h3 {
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            font-size: 16px;
-        }
-
-        .export-controls p {
-            margin-bottom: 15px;
-        }
-
-        .export-controls small {
-            display: block;
-            margin-top: 5px;
-        }
-
-        .export-controls a {
-            color: var(--info-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .export-controls a:hover {
-            text-decoration: underline;
-        }
-
-        .export-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .form-col {
-                min-width: 100%;
-            }
-
             .tabs {
                 flex-direction: column;
             }
-
+            
             .tab {
-                min-width: 100%;
+                text-align: center;
             }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .chart-wrapper {
-                height: 300px;
-            }
-
-            .buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--primary-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        .empty-state h3 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: var(--dark-color);
-        }
-
-        .empty-state p {
-            font-size: 16px;
-            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>📋 Jornada Médica - Sistema de Registro</h1>
-            <p class="subtitle">Sistema integral de gestión y análisis de datos en tiempo real</p>
-        </header>
-
-        <div class="tabs">
-            <div class="tab active" data-tab="formulario">📝 Formulario</div>
-            <div class="tab" data-tab="registros">📊 Registros</div>
-            <div class="tab" data-tab="dashboard">📈 Dashboard</div>
+        <div class="header">
+            <h1>Diagrama de Flujo de Distribución de Cartera</h1>
+            <p>Centro de Costo → Sub Ramo → Mercado | Producción Enero - Septiembre 2025</p>
         </div>
 
-        <!-- TAB: FORMULARIO -->
-        <div class="tab-content active" data-tab="formulario">
-            <div class="form-container">
-                <h2 class="section-title">Formulario de Registro de Paciente</h2>
-                <form id="medicalForm">
-                    <div class="section-title">Información del Evento</div>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="tipoEvento">Tipo de Evento *</label>
-                            <select id="tipoEvento" name="tipoEvento" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="JORNADA">Jornada</option>
-                                <option value="FERIA">Feria</option>
-                                <option value="OTRO">Otro</option>
-                            </select>
-                        </div>
-                        <div class="form-col">
-                            <label for="especialidad">Especialidad *</label>
-                            <select id="especialidad" name="especialidad" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="OFTALMOLOGIA">Oftalmología</option>
-                                <option value="MEDICINA GENERAL">Medicina General</option>
-                                <option value="PEDIATRIA">Pediatría</option>
-                                <option value="OTRA">Otra</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="section-title">Tipo de Consulta</div>
-                    <div class="form-group">
-                        <label>Tipo de Consulta *</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="tipoConsulta" value="INDIVIDUAL" required checked>
-                                <span>Individual</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="tipoConsulta" value="FAMILIAR" required>
-                                <span>Familiar</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="noMenoresAtendidos">No. Menores Atendidos</label>
-                            <select id="noMenoresAtendidos" name="noMenoresAtendidos" disabled>
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </div>
-                        <div class="form-col">
-                            <label for="noMayoresAtendidos">No. Mayores Atendidos</label>
-                            <select id="noMayoresAtendidos" name="noMayoresAtendidos" disabled>
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="section-title">Datos Personales</div>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="primerNombre">Primer Nombre *</label>
-                            <input type="text" id="primerNombre" name="primerNombre" required>
-                        </div>
-                        <div class="form-col">
-                            <label for="segundoNombre">Segundo Nombre</label>
-                            <input type="text" id="segundoNombre" name="segundoNombre">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="primerApellido">Primer Apellido *</label>
-                            <input type="text" id="primerApellido" name="primerApellido" required>
-                        </div>
-                        <div class="form-col">
-                            <label for="segundoApellido">Segundo Apellido</label>
-                            <input type="text" id="segundoApellido" name="segundoApellido">
-                        </div>
-                        <div class="form-col">
-                            <label for="apellidoCasada">Apellido de Casada</label>
-                            <input type="text" id="apellidoCasada" name="apellidoCasada">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="dpi">DPI (máx. 13 dígitos)</label>
-                            <input type="text" id="dpi" name="dpi" maxlength="13" pattern="[0-9]{0,13}" inputmode="numeric" placeholder="Ej: 1234567890123">
-                        </div>
-                        <div class="form-col">
-                            <label for="telefono">Teléfono *</label>
-                            <input type="tel" id="telefono" name="telefono" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="sexo">Sexo *</label>
-                            <select id="sexo" name="sexo" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="MASCULINO">Masculino</option>
-                                <option value="FEMENINO">Femenino</option>
-                            </select>
-                        </div>
-                        <div class="form-col">
-                            <label for="idioma">Idioma *</label>
-                            <select id="idioma" name="idioma" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="ESPAÑOL">Español</option>
-                                <option value="KAQCHIKEL">Kaqchikel</option>
-                                <option value="K'ICHE'">K'iche'</option>
-                                <option value="OTRO">Otro</option>
-                            </select>
-                        </div>
-                        <div class="form-col">
-                            <label for="fechaNacimiento">Fecha de Nacimiento *</label>
-                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
-                        </div>
-                    </div>
-
-                    <div class="section-title">Ubicación</div>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="departamento">Departamento *</label>
-                            <select id="departamento" name="departamento" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="GUATEMALA">Guatemala</option>
-                                <option value="SACATEPEQUEZ">Sacatepéquez</option>
-                                <option value="CHIMALTENANGO">Chimaltenango</option>
-                                <option value="ESCUINTLA">Escuintla</option>
-                                <option value="OTRO">Otro</option>
-                            </select>
-                        </div>
-                        <div class="form-col">
-                            <label for="municipio">Municipio *</label>
-                            <input type="text" id="municipio" name="municipio" required>
-                        </div>
-                    </div>
-
-                    <div class="section-title">Información Adicional</div>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="correo">Correo Electrónico</label>
-                            <input type="email" id="correo" name="correo">
-                        </div>
-                        <div class="form-col">
-                            <label for="nit">NIT</label>
-                            <input type="text" id="nit" name="nit">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>¿Cuenta con algún producto con la institución? *</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="productoFinca" value="SI" required>
-                                <span>Sí</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="productoFinca" value="NO" required checked>
-                                <span>No</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-col">
-                            <label for="comoEntero">¿Cómo se enteró del evento? *</label>
-                            <select id="comoEntero" name="comoEntero" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="UNIDAD MOVIL">Unidad Móvil</option>
-                                <option value="REDES SOCIALES">Redes Sociales</option>
-                                <option value="REFERIDO">Referido</option>
-                                <option value="VOLANTE">Volante</option>
-                                <option value="OTRO">Otro</option>
-                            </select>
-                        </div>
-                        <div class="form-col">
-                            <label for="ocupacion">Ocupación *</label>
-                            <select id="ocupacion" name="ocupacion" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="NO GENERA INGRESOS">No genera ingresos</option>
-                                <option value="INDEPENDIENTE INFORMAL">Independiente Informal</option>
-                                <option value="DEPENDIENTE FORMAL">Dependiente Formal</option>
-                                <option value="DEPENDIENTE INFORMAL">Dependiente Informal</option>
-                                <option value="DEPENDIENTE PUBLICO">Dependiente Público</option>
-                                <option value="INDEPENDIENTE FORMAL">Independiente Formal</option>
-                                <option value="JUBILADO">Jubilado</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="buttons">
-                        <button type="submit" class="btn btn-primary">
-                            <span class="btn-icon">💾</span> Guardar Registro
-                        </button>
-                        <button type="button" id="resetFormBtn" class="btn btn-secondary">
-                            <span class="btn-icon">🔄</span> Limpiar Formulario
-                        </button>
-                    </div>
-                </form>
+        <!-- Visualización: Sankey Completo -->
+        <div id="viz-completo" class="viz-container active">
+            <h2 class="viz-title">FLUJO COMPLETO: CENTRO DE COSTO → SUB RAMO → MERCADO</h2>
+            <p class="viz-description">El grosor de las líneas representa el volumen de producción. Cada color identifica un Sub Ramo específico.</p>
+            <div id="sankeyCompleto"></div>
+            <div class="info-box">
+                <h3>💡 Cómo interpretar:</h3>
+                <ul>
+                    <li>Las líneas más gruesas indican mayor producción</li>
+                    <li><strong>Cada color representa un Sub Ramo diferente</strong> - sigue el color para ver el flujo completo de un producto</li>
+                    <li>Puedes arrastrar los nodos para reorganizar la visualización</li>
+                    <li>Pasa el mouse sobre las líneas para ver el Sub Ramo y el monto exacto</li>
+                </ul>
             </div>
-        </div>
-
-        <!-- TAB: REGISTROS -->
-        <div class="tab-content" data-tab="registros">
-            <div class="records-container">
-                <h2 class="section-title">Registros Guardados</h2>
-                
-                <!-- Configuración de GitHub - Protegida con contraseña -->
-                <div class="export-controls" style="margin-bottom: 20px;">
-                    <h3>⚙️ Configuración de GitHub</h3>
-                    
-                    <!-- Formulario de contraseña -->
-                    <div id="githubPasswordSection">
-                        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
-                            🔒 Esta sección está protegida. Ingresa la contraseña para acceder a la configuración.
-                        </p>
-                        <div class="form-row" style="align-items: flex-end;">
-                            <div class="form-col" style="max-width: 300px;">
-                                <label for="githubPassword" style="font-size: 13px;">Contraseña de Acceso</label>
-                                <input type="password" id="githubPassword" placeholder="Ingresa la contraseña" style="padding: 10px; font-size: 14px;">
-                            </div>
-                            <div class="form-col" style="max-width: 150px;">
-                                <button id="unlockGithubBtn" class="btn btn-sm btn-info" style="width: 100%;">
-                                    🔓 Desbloquear
-                                </button>
-                            </div>
-                        </div>
-                        <p id="passwordError" style="color: #c0392b; font-size: 12px; margin-top: 10px; display: none;">
-                            ❌ Contraseña incorrecta. Intenta nuevamente.
-                        </p>
-                    </div>
-
-                    <!-- Configuración de GitHub (oculta inicialmente) -->
-                    <div id="githubConfigSection" style="display: none;">
-                        <div style="background-color: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #28a745;">
-                            <p style="font-size: 13px; color: #155724; margin: 0;">
-                                ✅ <strong>Acceso concedido</strong> - Puedes configurar tu repositorio de GitHub.
-                                <button id="lockGithubBtn" class="btn btn-sm btn-secondary" style="float: right; padding: 5px 10px; font-size: 11px;">
-                                    🔒 Bloquear
-                                </button>
-                            </p>
-                        </div>
-                        
-                        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">
-                            Configura tu repositorio de GitHub para subir automáticamente los archivos Excel exportados.
-                        </p>
-                        <div class="form-row" style="margin-bottom: 10px;">
-                            <div class="form-col">
-                                <label for="githubToken" style="font-size: 13px;">Token de Acceso Personal de GitHub</label>
-                                <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx" style="padding: 10px; font-size: 14px;">
-                                <small style="color: #666; font-size: 11px;">
-                                    <a href="https://github.com/settings/tokens" target="_blank" style="color: #3498db;">Crear token aquí</a> 
-                                    (con permisos: repo)
-                                </small>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-col">
-                                <label for="githubRepo" style="font-size: 13px;">Repositorio (formato: usuario/repositorio)</label>
-                                <input type="text" id="githubRepo" placeholder="francocarloss/JORNADAS-MEDICAS" style="padding: 10px; font-size: 14px;">
-                            </div>
-                            <div class="form-col">
-                                <label for="githubBranch" style="font-size: 13px;">Rama (Branch)</label>
-                                <input type="text" id="githubBranch" value="main" placeholder="main" style="padding: 10px; font-size: 14px;">
-                            </div>
-                        </div>
-                        <button id="saveGithubConfig" class="btn btn-sm btn-info" style="margin-top: 10px;">
-                            💾 Guardar Configuración
-                        </button>
-                    </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #e74c3c;"></div>
+                    <span class="legend-label">VIDA</span>
                 </div>
-
-                <div class="buttons">
-                    <button id="exportExcelBtn" class="btn btn-success">
-                        <span class="btn-icon">📥</span> Exportar a Excel (Local)
-                    </button>
-                    <button id="exportExcelGithubBtn" class="btn btn-info">
-                        <span class="btn-icon">📤</span> Exportar y Subir a GitHub
-                    </button>
-                    <button id="resetDataBtn" class="btn btn-danger">
-                        <span class="btn-icon">🗑️</span> Borrar Todos los Datos
-                    </button>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3498db;"></div>
+                    <span class="legend-label">VEHÍCULOS AUTOMOTORES</span>
                 </div>
-                <div class="table-container">
-                    <table id="recordsTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Evento</th>
-                                <th>Especialidad</th>
-                                <th>Nombre Completo</th>
-                                <th>DPI</th>
-                                <th>Teléfono</th>
-                                <th>Departamento</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recordsTableBody">
-                            <!-- Registros dinámicos -->
-                        </tbody>
-                    </table>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #2ecc71;"></div>
+                    <span class="legend-label">SEGURO TÉCNICO</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f39c12;"></div>
+                    <span class="legend-label">ACCIDENTES</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #9b59b6;"></div>
+                    <span class="legend-label">DESEMPLEO</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #1abc9c;"></div>
+                    <span class="legend-label">PARAMÉTRICO</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #e67e22;"></div>
+                    <span class="legend-label">INCENDIO</span>
                 </div>
             </div>
         </div>
 
-        <!-- TAB: DASHBOARD -->
-        <div class="tab-content" data-tab="dashboard">
-            <div class="dashboard-container">
-                <h2 class="section-title">Dashboard en Tiempo Real</h2>
-                
-                <!-- Estado de Sincronización -->
-                <div class="export-controls" style="margin-bottom: 20px; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-left-color: #4caf50;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                        <div>
-                            <h3 style="color: #2e7d32; margin-bottom: 5px;">☁️ Sincronización con GitHub</h3>
-                            <p id="syncStatus" style="font-size: 13px; color: #666; margin: 0;">
-                                <span id="syncIcon">⏳</span> <span id="syncText">Verificando conexión...</span>
-                            </p>
-                            <p style="font-size: 11px; color: #666; margin-top: 5px;">
-                                Última sincronización: <strong id="lastSync">Nunca</strong>
-                            </p>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button id="syncNowBtn" class="btn btn-sm btn-success">
-                                <span class="btn-icon">🔄</span> Sincronizar Ahora
-                            </button>
-                            <button id="autoSyncToggle" class="btn btn-sm btn-secondary">
-                                <span class="btn-icon">⚡</span> Auto-Sync: <span id="autoSyncStatus">OFF</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tarjetas de estadísticas -->
-                <div class="dashboard-grid">
-                    <div class="stat-card stat-card-primary">
-                        <h3>Total de Pacientes</h3>
-                        <div class="stat-value" id="totalPacientes">0</div>
-                        <div class="stat-label">Registros totales</div>
-                    </div>
-                    <div class="stat-card stat-card-success">
-                        <h3>Con DPI</h3>
-                        <div class="stat-value" id="conDPI">0</div>
-                        <div class="stat-label">Pacientes registrados</div>
-                    </div>
-                    <div class="stat-card stat-card-danger">
-                        <h3>Sin DPI</h3>
-                        <div class="stat-value" id="sinDPI">0</div>
-                        <div class="stat-label">Pacientes sin registrar</div>
-                    </div>
-                    <div class="stat-card stat-card-info">
-                        <h3>Con Producto</h3>
-                        <div class="stat-value" id="conProductoFinca">0</div>
-                        <div class="stat-label">Clientes existentes</div>
-                    </div>
-                    <div class="stat-card stat-card-secondary">
-                        <h3>Mayores de Edad</h3>
-                        <div class="stat-value" id="mayoresEdad">0</div>
-                        <div class="stat-label">Pacientes ≥ 18 años</div>
-                    </div>
-                    <div class="stat-card stat-card-warning">
-                        <h3>Menores de Edad</h3>
-                        <div class="stat-value" id="menoresEdad">0</div>
-                        <div class="stat-label">Pacientes < 18 años</div>
-                    </div>
-                </div>
-
-                <!-- Controles de exportación -->
-                <div class="export-controls">
-                    <h3>Exportar Dashboard</h3>
-                    <div class="export-buttons">
-                        <button id="exportAllPdfBtn" class="btn btn-danger btn-sm">
-                            <span class="btn-icon">📄</span> Exportar Todo a PDF
-                        </button>
-                        <button id="exportAllImageBtn" class="btn btn-info btn-sm">
-                            <span class="btn-icon">🖼️</span> Exportar Todo a Imagen
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Gráficas -->
-                <div class="chart-container" id="chart1Container">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Medio de Difusión</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-sm btn-danger" onclick="exportChartToPdf('chart1')">
-                                <span class="btn-icon">📄</span> PDF
-                            </button>
-                            <button class="btn btn-sm btn-info" onclick="exportChartToImage('chart1')">
-                                <span class="btn-icon">🖼️</span> Imagen
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="chart1"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-container" id="chart2Container">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Leads (Con DPI vs Sin DPI)</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-sm btn-danger" onclick="exportChartToPdf('chart2')">
-                                <span class="btn-icon">📄</span> PDF
-                            </button>
-                            <button class="btn btn-sm btn-info" onclick="exportChartToImage('chart2')">
-                                <span class="btn-icon">🖼️</span> Imagen
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="chart2"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-container" id="chart3Container">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Total por Ocupación</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-sm btn-danger" onclick="exportChartToPdf('chart3')">
-                                <span class="btn-icon">📄</span> PDF
-                            </button>
-                            <button class="btn btn-sm btn-info" onclick="exportChartToImage('chart3')">
-                                <span class="btn-icon">🖼️</span> Imagen
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="chart3"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-container" id="chart4Container">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Total por Especialidad</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-sm btn-danger" onclick="exportChartToPdf('chart4')">
-                                <span class="btn-icon">📄</span> PDF
-                            </button>
-                            <button class="btn btn-sm btn-info" onclick="exportChartToImage('chart4')">
-                                <span class="btn-icon">🖼️</span> Imagen
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="chart4"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-container" id="chart6Container">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Mayores vs Menores de Edad</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-sm btn-danger" onclick="exportChartToPdf('chart6')">
-                                <span class="btn-icon">📄</span> PDF
-                            </button>
-                            <button class="btn btn-sm btn-info" onclick="exportChartToImage('chart6')">
-                                <span class="btn-icon">🖼️</span> Imagen
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="chart6"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-container" id="chart5Container">
-                    <div class="chart-header">
-                        <h3 class="chart-title">¿Cuenta con Producto de la Institución?</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-sm btn-danger" onclick="exportChartToPdf('chart5')">
-                                <span class="btn-icon">📄</span> PDF
-                            </button>
-                            <button class="btn btn-sm btn-info" onclick="exportChartToImage('chart5')">
-                                <span class="btn-icon">🖼️</span> Imagen
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper" style="height: 350px;">
-                        <canvas id="chart5"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modales -->
-    <div id="editRecordModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Editar Registro</h3>
-                <span class="close" onclick="closeModal('editRecordModal')">&times;</span>
-            </div>
-            <form id="editForm">
-                <input type="hidden" id="editId" name="editId">
-                <!-- Similar structure to main form -->
-                <div class="section-title">Información del Evento</div>
-                <div class="form-row">
-                    <div class="form-col">
-                        <label for="editTipoEvento">Tipo de Evento</label>
-                        <select id="editTipoEvento" name="editTipoEvento">
-                            <option value="">Seleccionar...</option>
-                            <option value="JORNADA">Jornada</option>
-                            <option value="FERIA">Feria</option>
-                            <option value="OTRO">Otro</option>
-                        </select>
-                    </div>
-                    <div class="form-col">
-                        <label for="editEspecialidad">Especialidad</label>
-                        <select id="editEspecialidad" name="editEspecialidad">
-                            <option value="">Seleccionar...</option>
-                            <option value="OFTALMOLOGIA">Oftalmología</option>
-                            <option value="MEDICINA GENERAL">Medicina General</option>
-                            <option value="PEDIATRIA">Pediatría</option>
-                            <option value="OTRA">Otra</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Remaining fields similar to main form but with "edit" prefix -->
-                <div class="form-row">
-                    <div class="form-col">
-                        <label for="editPrimerNombre">Primer Nombre</label>
-                        <input type="text" id="editPrimerNombre" name="editPrimerNombre">
-                    </div>
-                    <div class="form-col">
-                        <label for="editPrimerApellido">Primer Apellido</label>
-                        <input type="text" id="editPrimerApellido" name="editPrimerApellido">
-                    </div>
-                </div>
-
-                <div class="buttons">
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('editRecordModal')">Cancelar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="confirmDeleteAllModal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3 class="modal-title">Confirmar Eliminación</h3>
-                <span class="close" onclick="closeModal('confirmDeleteAllModal')">&times;</span>
-            </div>
-            <p style="margin: 20px 0;">¿Está seguro de que desea eliminar TODOS los registros? Esta acción no se puede deshacer.</p>
-            <div class="buttons">
-                <button id="confirmDeleteAllActionBtn" class="btn btn-danger">Sí, Eliminar Todo</button>
-                <button id="cancelDeleteAllBtn" class="btn btn-secondary">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="confirmDeleteRecordModal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3 class="modal-title">Confirmar Eliminación</h3>
-                <span class="close" onclick="closeModal('confirmDeleteRecordModal')">&times;</span>
-            </div>
-            <p style="margin: 20px 0;">¿Está seguro de que desea eliminar este registro?</p>
-            <div class="buttons">
-                <button id="confirmDeleteRecordActionBtn" class="btn btn-danger">Sí, Eliminar</button>
-                <button id="cancelDeleteRecordBtn" class="btn btn-secondary">Cancelar</button>
-            </div>
+        <div class="footer">
+            <p>© 2025 Seguros Universales S.A. | División de Canales Alternos | Análisis de Producción Enero-Septiembre</p>
         </div>
     </div>
 
     <script>
-        // Variables globales
-        let records = []; // Los datos se guardarán AQUÍ en el código
-        let charts = {};
-        let currentEditId = null;
-        let recordIdToDelete = null;
-        let autoSyncEnabled = false;
-        let syncInProgress = false;
-        // Nombre del archivo HTML en GitHub (puedes cambiarlo si tu archivo se llama diferente)
-        let GITHUB_HTML_FILE = 'index.html';
+        // Paleta de colores para Sub Ramos
+        const ramoColors = {
+            'VIDA': '#e74c3c',
+            'VEHICULOS AUTOMOTORES': '#3498db',
+            'SEGURO TECNICO': '#2ecc71',
+            'ACCIDENTES': '#f39c12',
+            'DESEMPLEO': '#9b59b6',
+            'PARAMÉTRICO': '#1abc9c',
+            'INCENDIO Y LINEAS ALIADAS': '#e67e22',
+            'AVIACION': '#34495e',
+            'RESPONSABILIDAD CIVIL': '#16a085',
+            'TRANSPORTE': '#d35400',
+            'ROBO': '#c0392b',
+            'DINERO Y/O VALORES': '#8e44ad',
+            'SEGURO OBLIGATORIO': '#27ae60',
+            'MARITIMOS': '#2980b9'
+        };
 
-        const ALL_FORM_FIELDS = [
-            'tipoEvento', 'especialidad', 'tipoConsulta', 'noMenoresAtendidos', 'noMayoresAtendidos',
-            'primerNombre', 'segundoNombre', 'primerApellido', 'segundoApellido', 'apellidoCasada',
-            'dpi', 'telefono', 'sexo', 'idioma', 'fechaNacimiento', 'departamento', 'municipio',
-            'correo', 'nit', 'productoFinca', 'comoEntero', 'ocupacion'
-        ];
+        // Datos de producción por centro de costo (en millones)
+        const produccionData = {
+            'BAC': 44.82,
+            'Banco Antigua': 31.79,
+            'TIGO': 15.53,
+            'Venta Directa': 13.00,
+            'CrediQ': 8.62,
+            'Otras cuentas': 7.17,
+            'Distelsa': 5.74,
+            'Guadalupana': 4.72,
+            'Jarfesa': 3.72,
+            'CrediChapin': 3.66,
+            'Finca': 3.61,
+            'Banco Inmobiliario': 1.80,
+            'MINDEF': 1.60,
+            'Sostengo': 1.22,
+            'Cooitza': 1.02
+        };
 
-        // Elementos del DOM
-        const medicalForm = document.getElementById('medicalForm');
-        const editForm = document.getElementById('editForm');
-        const resetFormBtn = document.getElementById('resetFormBtn');
-        const exportExcelBtn = document.getElementById('exportExcelBtn');
-        const resetDataBtn = document.getElementById('resetDataBtn');
-        const recordsTableBody = document.getElementById('recordsTableBody');
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
+        // Participación por centro de costo
+        const participacionCentro = {
+            'BAC': 30.28,
+            'Banco Antigua': 21.48,
+            'TIGO': 10.49,
+            'Venta Directa': 8.78,
+            'CrediQ': 5.82,
+            'Otras cuentas': 4.84,
+            'Distelsa': 3.88,
+            'Guadalupana': 3.19,
+            'Jarfesa': 2.51,
+            'CrediChapin': 2.47,
+            'Finca': 2.44,
+            'MINDEF': 1.08,
+            'Sostengo': 0.82,
+            'Cooitza': 0.69,
+            'Banco Inmobiliario': 1.22
+        };
 
-        // LocalStorage
-        function saveRecordsToLocalStorage() {
-            localStorage.setItem('medicalRecords', JSON.stringify(records));
-        }
+        // Participación por mercado
+        const participacionMercado = {
+            'CONCESONARIO': 36.10,
+            'BANCA': 22.69,
+            'TELEFONIA': 10.49,
+            'VENTA DIRECTA': 8.78,
+            'FINANCIERA': 4.91,
+            'OTROS CANALES': 4.84,
+            'COPERATIVA': 3.88,
+            'Tienda de retail': 3.88,
+            'COMERCIALIZADOR': 2.51,
+            'GOBIERNO': 1.08,
+            'APPS/WEB': 0.82
+        };
 
-        function loadRecordsFromLocalStorage() {
-            const storedRecords = localStorage.getItem('medicalRecords');
-            if (storedRecords) {
-                records = JSON.parse(storedRecords);
-            }
-        }
+        // Conexiones Centro de Costo × Sub Ramo
+        const conexiones = {
+            'BAC': ['VEHICULOS AUTOMOTORES', 'ACCIDENTES', 'VIDA'],
+            'Banco Antigua': ['INCENDIO Y LINEAS ALIADAS', 'VEHICULOS AUTOMOTORES', 'DESEMPLEO', 'PARAMÉTRICO', 'VIDA'],
+            'Banco Inmobiliario': ['VIDA'],
+            'Cooitza': ['VEHICULOS AUTOMOTORES', 'ACCIDENTES', 'VIDA'],
+            'CrediChapin': ['VEHICULOS AUTOMOTORES', 'VIDA'],
+            'CrediQ': ['VEHICULOS AUTOMOTORES', 'VIDA'],
+            'Distelsa': ['VEHICULOS AUTOMOTORES', 'DESEMPLEO', 'VIDA'],
+            'Finca': ['DESEMPLEO', 'PARAMÉTRICO', 'VIDA'],
+            'Guadalupana': ['INCENDIO Y LINEAS ALIADAS', 'VEHICULOS AUTOMOTORES', 'ACCIDENTES', 'VIDA'],
+            'Jarfesa': ['ACCIDENTES', 'VIDA'],
+            'MINDEF': ['VEHICULOS AUTOMOTORES', 'VIDA'],
+            'Otras cuentas': ['VEHICULOS AUTOMOTORES', 'ACCIDENTES', 'PARAMÉTRICO', 'VIDA'],
+            'Sostengo': ['VEHICULOS AUTOMOTORES', 'VIDA'],
+            'TIGO': ['SEGURO TECNICO', 'VIDA'],
+            'Venta Directa': ['INCENDIO Y LINEAS ALIADAS', 'VEHICULOS AUTOMOTORES', 'TRANSPORTE', 'ACCIDENTES', 
+                             'RESPONSABILIDAD CIVIL', 'AVIACION', 'SEGURO TECNICO', 'ROBO', 'DINERO Y/O VALORES', 
+                             'MARITIMOS', 'SEGURO OBLIGATORIO', 'VIDA']
+        };
 
-        // ============================================
-        // SINCRONIZACIÓN CON GITHUB
-        // ============================================
+        // Participación por Sub Ramo
+        const ramoParticipacion = {
+            'VIDA': 40.96,
+            'VEHICULOS AUTOMOTORES': 35.37,
+            'SEGURO TECNICO': 10.56,
+            'ACCIDENTES': 4.86,
+            'DESEMPLEO': 4.51,
+            'PARAMÉTRICO': 1.65,
+            'INCENDIO Y LINEAS ALIADAS': 1.52,
+            'AVIACION': 0.31,
+            'RESPONSABILIDAD CIVIL': 0.21,
+            'TRANSPORTE': 0.06,
+            'ROBO': 0.03,
+            'DINERO Y/O VALORES': 0.00,
+            'SEGURO OBLIGATORIO': 0.00,
+            'MARITIMOS': -0.03
+        };
 
-        // Actualizar indicador de estado de sincronización
-        function updateSyncStatus(status, message) {
-            const syncIcon = document.getElementById('syncIcon');
-            const syncText = document.getElementById('syncText');
-            
-            const statusConfig = {
-                'loading': { icon: '⏳', color: '#ff9800' },
-                'success': { icon: '✅', color: '#4caf50' },
-                'error': { icon: '❌', color: '#f44336' },
-                'warning': { icon: '⚠️', color: '#ff9800' },
-                'offline': { icon: '📡', color: '#9e9e9e' }
-            };
-            
-            const config = statusConfig[status] || statusConfig['offline'];
-            syncIcon.textContent = config.icon;
-            syncText.textContent = message;
-            syncText.style.color = config.color;
-        }
+        // Datos de mercado × sub ramo
+        const mercadoRamoData = {
+            'VIDA': {'BANCA': 69.26, 'COMERCIALIZADOR': 91.25, 'CONCESONARIO': 26.23, 'COPERATIVA': 78.48, 
+                     'FINANCIERA': 97.20, 'GOBIERNO': 100, 'OTROS CANALES': 87.66, 'Tienda de retail': 3.57, 'VENTA DIRECTA': 0.50},
+            'VEHICULOS AUTOMOTORES': {'APPS/WEB': 100, 'CONCESONARIO': 73.77, 'COPERATIVA': 8.06, 'OTROS CANALES': 11.12, 
+                                     'Tienda de retail': 93.52, 'VENTA DIRECTA': 41.60},
+            'SEGURO TECNICO': {'TELEFONIA': 100, 'VENTA DIRECTA': 0.76},
+            'ACCIDENTES': {'BANCA': 1.50, 'COMERCIALIZADOR': 8.75, 'COPERATIVA': 1.73, 'OTROS CANALES': 1.22, 'VENTA DIRECTA': 47.44},
+            'DESEMPLEO': {'BANCA': 19.03, 'FINANCIERA': 0.25, 'Tienda de retail': 2.92},
+            'PARAMÉTRICO': {'BANCA': 6.64, 'FINANCIERA': 2.55},
+            'INCENDIO Y LINEAS ALIADAS': {'BANCA': 3.41, 'COPERATIVA': 11.73, 'VENTA DIRECTA': 3.15},
+            'AVIACION': {'VENTA DIRECTA': 3.49},
+            'RESPONSABILIDAD CIVIL': {'VENTA DIRECTA': 2.35},
+            'TRANSPORTE': {'VENTA DIRECTA': 0.65},
+            'ROBO': {'VENTA DIRECTA': 0.39},
+            'DINERO Y/O VALORES': {'VENTA DIRECTA': 0.04},
+            'SEGURO OBLIGATORIO': {'VENTA DIRECTA': 0.02}
+        };
 
-        // Obtener configuración de GitHub
-        function getGithubConfig() {
-            const token = localStorage.getItem('githubToken');
-            const repo = localStorage.getItem('githubRepo');
-            const branch = localStorage.getItem('githubBranch') || 'main';
-            
-            if (!token || !repo) {
-                return null;
-            }
-            
-            return { token, repo, branch };
-        }
+        // ========== VISUALIZACIÓN 1: SANKEY COMPLETO ==========
+        function createSankeyCompleto() {
+            const nodes = [];
+            const links = [];
+            const nodeMap = {};
+            let nodeIndex = 0;
 
-        // Leer datos desde GitHub (extrayendo del HTML)
-        async function loadDataFromGithub() {
-            const config = getGithubConfig();
-            
-            if (!config) {
-                console.log('📡 GitHub no configurado');
-                updateSyncStatus('offline', 'GitHub no configurado');
-                return false;
-            }
-
-            try {
-                console.log('📥 Descargando HTML desde GitHub para extraer datos...');
-                updateSyncStatus('loading', 'Sincronizando desde GitHub...');
-                
-                const response = await fetch(`https://api.github.com/repos/${config.repo}/contents/${GITHUB_HTML_FILE}?ref=${config.branch}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `token ${config.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const htmlContent = atob(data.content.replace(/\n/g, ''));
-                    
-                    // Extraer la parte "let records = [...];"
-                    const recordsMatch = htmlContent.match(/let records = (\[[\s\S]*?\]);/);
-                    
-                    if (recordsMatch && recordsMatch[1]) {
-                        const githubRecords = JSON.parse(recordsMatch[1]);
-                        console.log('✅ Descargado:', githubRecords.length, 'registros desde el código HTML');
-                        
-                        // Actualizar records con datos de GitHub
-                        records = githubRecords;
-                        saveRecordsToLocalStorage();
-                        
-                        updateSyncStatus('success', `${records.length} registros sincronizados desde GitHub`);
-                        updateLastSyncTime();
-                        return true;
-                    } else {
-                        console.log('⚠️ No se encontró la variable records en el HTML');
-                        updateSyncStatus('warning', 'No se encontraron datos en el código');
-                        return false;
-                    }
-                } else if (response.status === 404) {
-                    console.log('⚠️ Archivo HTML no existe en GitHub');
-                    updateSyncStatus('warning', 'Archivo no existe en GitHub');
-                    return false;
-                } else {
-                    const errorData = await response.json();
-                    console.error('❌ Error HTTP:', response.status, errorData);
-                    throw new Error(`Error HTTP: ${response.status} - ${errorData.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('❌ Error al cargar desde GitHub:', error);
-                updateSyncStatus('error', 'Error al sincronizar desde GitHub');
-                return false;
-            }
-        }
-
-        // Guardar datos en GitHub MODIFICANDO EL HTML MISMO
-        async function saveDataToGithub() {
-            const config = getGithubConfig();
-            
-            if (!config) {
-                console.log('❌ GitHub no configurado');
-                return false;
-            }
-
-            if (syncInProgress) {
-                console.log('⏳ Sincronización ya en progreso...');
-                return false;
-            }
-
-            try {
-                syncInProgress = true;
-                updateSyncStatus('loading', 'Guardando datos en el código HTML...');
-                console.log('📤 Modificando HTML en GitHub con', records.length, 'registros...');
-
-                // 1. DESCARGAR el HTML actual desde GitHub
-                const downloadResponse = await fetch(`https://api.github.com/repos/${config.repo}/contents/${GITHUB_HTML_FILE}?ref=${config.branch}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `token ${config.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-
-                if (!downloadResponse.ok) {
-                    throw new Error(`Error al descargar HTML: ${downloadResponse.status}`);
-                }
-
-                const fileData = await downloadResponse.json();
-                const currentHtml = atob(fileData.content.replace(/\n/g, ''));
-                const sha = fileData.sha;
-                console.log('✅ HTML descargado desde GitHub');
-
-                // 2. BUSCAR y REEMPLAZAR la línea "let records = [...];"
-                const recordsJson = JSON.stringify(records, null, 8); // 8 espacios de indentación
-                
-                // Buscar la línea que contiene "let records = "
-                const recordsRegex = /let records = \[[\s\S]*?\];/;
-                
-                let newHtml;
-                if (recordsRegex.test(currentHtml)) {
-                    // Reemplazar los datos existentes
-                    newHtml = currentHtml.replace(recordsRegex, `let records = ${recordsJson};`);
-                    console.log('✅ Datos actualizados en el código');
-                } else {
-                    throw new Error('No se encontró la línea "let records = " en el HTML');
-                }
-
-                // 3. SUBIR el HTML modificado a GitHub
-                const base64Html = btoa(unescape(encodeURIComponent(newHtml)));
-
-                const uploadBody = {
-                    message: `📊 Actualizar datos en código - ${new Date().toLocaleString('es-GT')} - ${records.length} registros`,
-                    content: base64Html,
-                    sha: sha,
-                    branch: config.branch
-                };
-
-                const uploadResponse = await fetch(`https://api.github.com/repos/${config.repo}/contents/${GITHUB_HTML_FILE}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${config.token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(uploadBody)
-                });
-
-                if (uploadResponse.ok) {
-                    console.log('✅ HTML modificado exitosamente en GitHub:', records.length, 'registros');
-                    updateSyncStatus('success', `${records.length} registros guardados en el código`);
-                    updateLastSyncTime();
-                    syncInProgress = false;
-                    return true;
-                } else {
-                    const errorData = await uploadResponse.json();
-                    console.error('❌ Error HTTP:', uploadResponse.status, errorData);
-                    throw new Error(`Error HTTP: ${uploadResponse.status} - ${errorData.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('❌ Error al guardar en GitHub:', error);
-                updateSyncStatus('error', 'Error al modificar el código');
-                showAlert('❌ Error al sincronizar con GitHub: ' + error.message, 'danger');
-                syncInProgress = false;
-                return false;
-            }
-        }
-
-        // Actualizar timestamp de última sincronización
-        function updateLastSyncTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('es-GT', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            document.getElementById('lastSync').textContent = timeString;
-            localStorage.setItem('lastSyncTime', now.toISOString());
-        }
-
-        // Sincronizar ahora (botón manual)
-        async function syncNow() {
-            const success = await loadDataFromGithub();
-            if (success) {
-                renderTable();
-                if (document.querySelector('.tab[data-tab="dashboard"]').classList.contains('active')) {
-                    updateDashboard();
-                }
-                showAlert('✅ Datos sincronizados desde GitHub correctamente!', 'success');
-            }
-        }
-
-        // Toggle auto-sync
-        function toggleAutoSync() {
-            autoSyncEnabled = !autoSyncEnabled;
-            localStorage.setItem('autoSyncEnabled', autoSyncEnabled);
-            
-            const statusSpan = document.getElementById('autoSyncStatus');
-            const toggleBtn = document.getElementById('autoSyncToggle');
-            
-            if (autoSyncEnabled) {
-                statusSpan.textContent = 'ON';
-                toggleBtn.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
-                showAlert('✅ Auto-sincronización activada. Los cambios se guardarán en GitHub automáticamente.', 'success');
-                startAutoSync();
-            } else {
-                statusSpan.textContent = 'OFF';
-                toggleBtn.style.background = 'linear-gradient(135deg, #95a5a6, #7f8c8d)';
-                showAlert('⏸️ Auto-sincronización desactivada.', 'info');
-                stopAutoSync();
-            }
-        }
-
-        // Auto-sync interval
-        let autoSyncInterval = null;
-
-        function startAutoSync() {
-            if (autoSyncInterval) {
-                clearInterval(autoSyncInterval);
-            }
-            
-            console.log('⚡ Auto-sincronización activada (cada 30 segundos)');
-            
-            // Sincronizar cada 30 segundos
-            autoSyncInterval = setInterval(async () => {
-                if (autoSyncEnabled) {
-                    console.log('🔄 Auto-sync ejecutándose...');
-                    await loadDataFromGithub();
-                    renderTable();
-                    if (document.querySelector('.tab[data-tab="dashboard"]').classList.contains('active')) {
-                        updateDashboard();
-                    }
-                    console.log('✅ Auto-sync completado');
-                }
-            }, 30000); // 30 segundos
-        }
-
-        function stopAutoSync() {
-            if (autoSyncInterval) {
-                clearInterval(autoSyncInterval);
-                autoSyncInterval = null;
-                console.log('⏸️ Auto-sincronización desactivada');
-            }
-        }
-
-        // Cargar estado de auto-sync
-        function loadAutoSyncState() {
-            const saved = localStorage.getItem('autoSyncEnabled');
-            autoSyncEnabled = saved === 'true';
-            
-            const statusSpan = document.getElementById('autoSyncStatus');
-            const toggleBtn = document.getElementById('autoSyncToggle');
-            
-            if (autoSyncEnabled) {
-                statusSpan.textContent = 'ON';
-                toggleBtn.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
-                startAutoSync();
-            } else {
-                statusSpan.textContent = 'OFF';
-            }
-
-            // Mostrar última sincronización
-            const lastSync = localStorage.getItem('lastSyncTime');
-            if (lastSync) {
-                const date = new Date(lastSync);
-                const timeString = date.toLocaleTimeString('es-GT', { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-                document.getElementById('lastSync').textContent = timeString;
-            }
-        }
-
-        // Alertas
-        function showAlert(message, type = 'success') {
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            document.body.appendChild(alert);
-
-            setTimeout(() => {
-                alert.remove();
-            }, 3000);
-        }
-
-        // Modales
-        function openModal(modalId) {
-            const modal = typeof modalId === 'string' ? document.getElementById(modalId) : modalId;
-            modal.classList.add('show');
-        }
-
-        function closeModal(modalId) {
-            const modal = typeof modalId === 'string' ? document.getElementById(modalId) : modalId;
-            modal.classList.remove('show');
-        }
-
-        // Tabs
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-                
-                tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(tc => tc.classList.remove('active'));
-                
-                tab.classList.add('active');
-                document.querySelector(`.tab-content[data-tab="${tabName}"]`).classList.add('active');
-
-                if (tabName === 'registros') {
-                    renderTable();
-                } else if (tabName === 'dashboard') {
-                    updateDashboard();
-                }
-            });
-        });
-
-        // Actualizar estado de campos dependientes
-        function updateAtendidosFieldsState(formContext) {
-            const form = formContext === 'main' ? medicalForm : editForm;
-            const prefix = formContext === 'edit' ? 'edit' : '';
-            const capitalizedPrefix = prefix ? 'Edit' : '';
-            
-            const tipoConsultaName = `${prefix}${prefix ? 'T' : 't'}ipoConsulta`;
-            const menoresFieldName = `${prefix}${prefix ? 'N' : 'n'}oMenoresAtendidos`;
-            const mayoresFieldName = `${prefix}${prefix ? 'N' : 'n'}oMayoresAtendidos`;
-            
-            const checkedRadio = form.querySelector(`input[name="${tipoConsultaName}"]:checked`);
-            const tipoConsultaValue = checkedRadio ? checkedRadio.value : '';
-            
-            const menoresField = form.querySelector(`[name="${menoresFieldName}"]`);
-            const mayoresField = form.querySelector(`[name="${mayoresFieldName}"]`);
-            
-            if (tipoConsultaValue === 'INDIVIDUAL') {
-                menoresField.disabled = true;
-                mayoresField.disabled = false;
-                menoresField.value = '0';
-            } else if (tipoConsultaValue === 'FAMILIAR') {
-                menoresField.disabled = false;
-                mayoresField.disabled = false;
-            } else {
-                menoresField.disabled = true;
-                mayoresField.disabled = true;
-                menoresField.value = '0';
-                mayoresField.value = '0';
-            }
-        }
-
-        // Listeners para cambio de tipoConsulta
-        medicalForm.querySelectorAll('input[name="tipoConsulta"]').forEach(radio => {
-            radio.addEventListener('change', () => updateAtendidosFieldsState('main'));
-        });
-
-        // Validación del campo DPI - solo números y máximo 13 dígitos
-        const dpiField = document.getElementById('dpi');
-        dpiField.addEventListener('input', function(e) {
-            // Remover cualquier carácter que no sea número
-            this.value = this.value.replace(/[^0-9]/g, '');
-            // Limitar a 13 dígitos
-            if (this.value.length > 13) {
-                this.value = this.value.slice(0, 13);
-            }
-        });
-
-        // Submit del formulario principal
-        medicalForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const record = { id: Date.now().toString() };
-            
-            ALL_FORM_FIELDS.forEach(fieldKey => {
-                const fieldElement = medicalForm.elements[fieldKey];
-                if (fieldElement) {
-                    if (fieldElement.type === 'radio') {
-                        const checkedRadio = medicalForm.querySelector(`input[name="${fieldKey}"]:checked`);
-                        if (checkedRadio) record[fieldKey] = checkedRadio.value;
-                    } else {
-                        record[fieldKey] = fieldElement.value;
-                    }
-                }
-            });
-            
-            records.push(record);
-            saveRecordsToLocalStorage();
-            
-            // SIEMPRE sincronizar con GitHub si está configurado
-            const config = getGithubConfig();
-            if (config) {
-                await saveDataToGithub();
-            }
-            
-            showAlert('✅ Registro guardado exitosamente!');
-            medicalForm.reset();
-            medicalForm.querySelector('input[name="tipoConsulta"][value="INDIVIDUAL"]').checked = true;
-            medicalForm.querySelector('input[name="productoFinca"][value="NO"]').checked = true;
-            updateAtendidosFieldsState('main');
-            
-            // Actualizar dashboard si está visible
-            if (document.querySelector('.tab[data-tab="dashboard"]').classList.contains('active')) {
-                updateDashboard();
-            }
-        });
-
-        resetFormBtn.addEventListener('click', () => {
-            medicalForm.reset();
-            medicalForm.querySelector('input[name="tipoConsulta"][value="INDIVIDUAL"]').checked = true;
-            medicalForm.querySelector('input[name="productoFinca"][value="NO"]').checked = true;
-            updateAtendidosFieldsState('main');
-            showAlert('🔄 Formulario limpiado.', 'info');
-        });
-
-        // Renderizar tabla
-        function renderTable() {
-            recordsTableBody.innerHTML = '';
-            
-            if (records.length === 0) {
-                recordsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px;">
-                            <div class="empty-state">
-                                <div class="empty-state-icon">📭</div>
-                                <h3>No hay registros</h3>
-                                <p>Los registros aparecerán aquí cuando agregues pacientes</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            records.forEach(record => {
-                const row = document.createElement('tr');
-                const nombreCompleto = `${record.primerNombre || ''} ${record.segundoNombre || ''} ${record.primerApellido || ''} ${record.segundoApellido || ''}`.trim();
-                
-                row.innerHTML = `
-                    <td>${record.id.slice(-6)}</td>
-                    <td>${record.tipoEvento || ''}</td>
-                    <td>${record.especialidad || ''}</td>
-                    <td>${nombreCompleto}</td>
-                    <td>${record.dpi || 'N/A'}</td>
-                    <td>${record.telefono || ''}</td>
-                    <td>${record.departamento || ''}</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning" onclick="handleEdit('${record.id}')">✏️ Editar</button>
-                        <button class="btn btn-sm btn-danger" onclick="handleDeleteOne('${record.id}')">🗑️</button>
-                    </td>
-                `;
-                recordsTableBody.appendChild(row);
-            });
-        }
-
-        // Manejar edición
-        function handleEdit(id) {
-            const recordToEdit = records.find(r => r.id === id);
-            if (!recordToEdit) return;
-
-            currentEditId = id;
-            document.getElementById('editId').value = id;
-
-            // Poblar campos del modal de edición
-            document.getElementById('editTipoEvento').value = recordToEdit.tipoEvento || '';
-            document.getElementById('editEspecialidad').value = recordToEdit.especialidad || '';
-            document.getElementById('editPrimerNombre').value = recordToEdit.primerNombre || '';
-            document.getElementById('editPrimerApellido').value = recordToEdit.primerApellido || '';
-            
-            openModal('editRecordModal');
-        }
-
-        editForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            
-            const updatedData = {
-                tipoEvento: document.getElementById('editTipoEvento').value,
-                especialidad: document.getElementById('editEspecialidad').value,
-                primerNombre: document.getElementById('editPrimerNombre').value,
-                primerApellido: document.getElementById('editPrimerApellido').value,
-            };
-
-            records = records.map(r => r.id === currentEditId ? { ...r, ...updatedData } : r);
-            saveRecordsToLocalStorage();
-            
-            // SIEMPRE sincronizar con GitHub si está configurado
-            const config = getGithubConfig();
-            if (config) {
-                await saveDataToGithub();
-            }
-            
-            renderTable();
-            closeModal('editRecordModal');
-            showAlert('✅ Registro actualizado exitosamente!');
-            
-            // Actualizar dashboard si está visible
-            if (document.querySelector('.tab[data-tab="dashboard"]').classList.contains('active')) {
-                updateDashboard();
-            }
-        });
-
-        // Eliminar todos los registros
-        resetDataBtn.addEventListener('click', () => {
-            if (records.length === 0) {
-                showAlert('No hay registros para borrar.', 'info');
-                return;
-            }
-            openModal('confirmDeleteAllModal');
-        });
-
-        document.getElementById('cancelDeleteAllBtn').addEventListener('click', () => closeModal('confirmDeleteAllModal'));
-
-        document.getElementById('confirmDeleteAllActionBtn').addEventListener('click', async () => {
-            records = [];
-            saveRecordsToLocalStorage();
-            
-            // SIEMPRE sincronizar con GitHub si está configurado
-            const config = getGithubConfig();
-            if (config) {
-                await saveDataToGithub();
-            }
-            
-            renderTable();
-            closeModal('confirmDeleteAllModal');
-            showAlert('✅ Todos los registros han sido eliminados.', 'success');
-            updateDashboard();
-        });
-
-        // Eliminar un registro
-        function handleDeleteOne(id) {
-            recordIdToDelete = id;
-            openModal('confirmDeleteRecordModal');
-        }
-
-        document.getElementById('cancelDeleteRecordBtn').addEventListener('click', () => {
-            recordIdToDelete = null;
-            closeModal('confirmDeleteRecordModal');
-        });
-
-        document.getElementById('confirmDeleteRecordActionBtn').addEventListener('click', async () => {
-            if (!recordIdToDelete) return;
-            records = records.filter(r => r.id !== recordIdToDelete);
-            saveRecordsToLocalStorage();
-            
-            // SIEMPRE sincronizar con GitHub si está configurado
-            const config = getGithubConfig();
-            if (config) {
-                await saveDataToGithub();
-            }
-            
-            renderTable();
-            closeModal('confirmDeleteRecordModal');
-            showAlert('✅ Registro eliminado.', 'success');
-            recordIdToDelete = null;
-            updateDashboard();
-        });
-
-        // Exportar a Excel
-        exportExcelBtn.addEventListener('click', () => {
-            if (records.length === 0) {
-                showAlert('No hay registros para exportar.', 'info');
-                return;
-            }
-
-            const dataToExport = records.map(record => {
-                const headers = {
-                    id: 'ID', tipoEvento: 'Tipo Evento', especialidad: 'Especialidad',
-                    tipoConsulta: 'Tipo Consulta', noMenoresAtendidos: 'No. Menores Atendidos',
-                    noMayoresAtendidos: 'No. Mayores Atendidos', primerNombre: 'Primer Nombre',
-                    segundoNombre: 'Segundo Nombre', primerApellido: 'Primer Apellido',
-                    segundoApellido: 'Segundo Apellido', apellidoCasada: 'Apellido Casada',
-                    dpi: 'DPI', telefono: 'Teléfono', sexo: 'Sexo', idioma: 'Idioma',
-                    fechaNacimiento: 'Fecha Nacimiento', departamento: 'Departamento',
-                    municipio: 'Municipio', correo: 'Correo', nit: 'NIT',
-                    productoFinca: 'Producto Institución', comoEntero: 'Cómo se Enteró',
-                    ocupacion: 'Ocupación'
-                };
-                
-                const exportRecord = {};
-                for (const key in headers) {
-                    if (Object.hasOwnProperty.call(headers, key)) {
-                        exportRecord[headers[key]] = record[key] !== undefined ? record[key] : '';
-                    }
-                }
-                return exportRecord;
+            // Crear nodos para Centros de Costo
+            Object.keys(produccionData).forEach(centro => {
+                nodeMap[centro] = nodeIndex;
+                nodes.push({name: centro, color: '#95a5a6'});
+                nodeIndex++;
             });
 
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "RegistrosMedicos");
-            
-            const date = new Date();
-            const filename = `RegistrosMedicos_${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}_${String(date.getHours()).padStart(2,'0')}${String(date.getMinutes()).padStart(2,'0')}.xlsx`;
-            XLSX.writeFile(workbook, filename);
-            showAlert('✅ Datos exportados a Excel localmente.', 'success');
-        });
-
-        // Guardar configuración de GitHub
-        const saveGithubConfigBtn = document.getElementById('saveGithubConfig');
-        saveGithubConfigBtn.addEventListener('click', () => {
-            const token = document.getElementById('githubToken').value;
-            const repo = document.getElementById('githubRepo').value;
-            const branch = document.getElementById('githubBranch').value;
-
-            if (!token || !repo) {
-                showAlert('⚠️ Por favor completa el Token y el Repositorio.', 'info');
-                return;
-            }
-
-            // Guardar en localStorage
-            localStorage.setItem('githubToken', token);
-            localStorage.setItem('githubRepo', repo);
-            localStorage.setItem('githubBranch', branch || 'main');
-
-            showAlert('✅ Configuración de GitHub guardada.', 'success');
-        });
-
-        // Cargar configuración de GitHub al iniciar
-        function loadGithubConfig() {
-            const token = localStorage.getItem('githubToken');
-            const repo = localStorage.getItem('githubRepo');
-            const branch = localStorage.getItem('githubBranch');
-            const isUnlocked = localStorage.getItem('githubUnlocked');
-
-            if (token) document.getElementById('githubToken').value = token;
-            if (repo) document.getElementById('githubRepo').value = repo;
-            if (branch) document.getElementById('githubBranch').value = branch;
-
-            // Si está desbloqueado, mostrar la sección
-            if (isUnlocked === 'true') {
-                document.getElementById('githubPasswordSection').style.display = 'none';
-                document.getElementById('githubConfigSection').style.display = 'block';
-            }
-        }
-
-        // Validación de contraseña para GitHub
-        const unlockGithubBtn = document.getElementById('unlockGithubBtn');
-        const githubPasswordInput = document.getElementById('githubPassword');
-        const passwordError = document.getElementById('passwordError');
-        const githubPasswordSection = document.getElementById('githubPasswordSection');
-        const githubConfigSection = document.getElementById('githubConfigSection');
-        const lockGithubBtn = document.getElementById('lockGithubBtn');
-
-        const GITHUB_PASSWORD = 'Octubre2015';
-
-        // Desbloquear configuración de GitHub
-        unlockGithubBtn.addEventListener('click', () => {
-            const enteredPassword = githubPasswordInput.value;
-
-            if (enteredPassword === GITHUB_PASSWORD) {
-                // Contraseña correcta
-                githubPasswordSection.style.display = 'none';
-                githubConfigSection.style.display = 'block';
-                passwordError.style.display = 'none';
-                githubPasswordInput.value = '';
-                
-                // Guardar estado desbloqueado
-                localStorage.setItem('githubUnlocked', 'true');
-                
-                showAlert('✅ Acceso concedido a la configuración de GitHub.', 'success');
-            } else {
-                // Contraseña incorrecta
-                passwordError.style.display = 'block';
-                githubPasswordInput.value = '';
-                githubPasswordInput.focus();
-            }
-        });
-
-        // Permitir desbloquear con Enter
-        githubPasswordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                unlockGithubBtn.click();
-            }
-        });
-
-        // Bloquear configuración de GitHub
-        lockGithubBtn.addEventListener('click', () => {
-            githubConfigSection.style.display = 'none';
-            githubPasswordSection.style.display = 'block';
-            passwordError.style.display = 'none';
-            
-            // Guardar estado bloqueado
-            localStorage.setItem('githubUnlocked', 'false');
-            
-            showAlert('🔒 Configuración de GitHub bloqueada.', 'info');
-        });
-
-        // Exportar a Excel y subir a GitHub
-        const exportExcelGithubBtn = document.getElementById('exportExcelGithubBtn');
-        exportExcelGithubBtn.addEventListener('click', async () => {
-            if (records.length === 0) {
-                showAlert('No hay registros para exportar.', 'info');
-                return;
-            }
-
-            const token = localStorage.getItem('githubToken');
-            const repo = localStorage.getItem('githubRepo');
-            const branch = localStorage.getItem('githubBranch') || 'main';
-
-            if (!token || !repo) {
-                showAlert('⚠️ Configura primero tu token y repositorio de GitHub.', 'info');
-                return;
-            }
-
-            // Crear Excel en memoria
-            const dataToExport = records.map(record => {
-                const headers = {
-                    id: 'ID', tipoEvento: 'Tipo Evento', especialidad: 'Especialidad',
-                    tipoConsulta: 'Tipo Consulta', noMenoresAtendidos: 'No. Menores Atendidos',
-                    noMayoresAtendidos: 'No. Mayores Atendidos', primerNombre: 'Primer Nombre',
-                    segundoNombre: 'Segundo Nombre', primerApellido: 'Primer Apellido',
-                    segundoApellido: 'Segundo Apellido', apellidoCasada: 'Apellido Casada',
-                    dpi: 'DPI', telefono: 'Teléfono', sexo: 'Sexo', idioma: 'Idioma',
-                    fechaNacimiento: 'Fecha Nacimiento', departamento: 'Departamento',
-                    municipio: 'Municipio', correo: 'Correo', nit: 'NIT',
-                    productoFinca: 'Producto Institución', comoEntero: 'Cómo se Enteró',
-                    ocupacion: 'Ocupación'
-                };
-                
-                const exportRecord = {};
-                for (const key in headers) {
-                    if (Object.hasOwnProperty.call(headers, key)) {
-                        exportRecord[headers[key]] = record[key] !== undefined ? record[key] : '';
-                    }
-                }
-                return exportRecord;
+            // Crear nodos para Sub Ramos
+            const ramos = [...new Set(Object.values(conexiones).flat())];
+            ramos.forEach(ramo => {
+                nodeMap[ramo] = nodeIndex;
+                nodes.push({name: ramo, color: ramoColors[ramo] || '#bdc3c7'});
+                nodeIndex++;
             });
 
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "RegistrosMedicos");
-            
-            // Convertir a base64
-            const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-            const blob = new Blob([wbout], { type: 'application/octet-stream' });
-            const reader = new FileReader();
-            
-            reader.onloadend = async () => {
-                const base64data = reader.result.split(',')[1];
-                
-                const date = new Date();
-                const filename = `RegistrosMedicos_${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}_${String(date.getHours()).padStart(2,'0')}${String(date.getMinutes()).padStart(2,'0')}.xlsx`;
-                const path = `exports/${filename}`;
+            // Crear nodos para Mercados
+            const mercados = ['BANCA', 'COMERCIALIZADOR', 'CONCESONARIO', 'COPERATIVA', 'FINANCIERA', 
+                            'GOBIERNO', 'OTROS CANALES', 'TELEFONIA', 'Tienda de retail', 'VENTA DIRECTA', 'APPS/WEB'];
+            mercados.forEach(mercado => {
+                nodeMap[mercado] = nodeIndex;
+                nodes.push({name: mercado, color: '#7f8c8d'});
+                nodeIndex++;
+            });
 
-                try {
-                    // Verificar si el archivo ya existe
-                    let sha = null;
-                    try {
-                        const checkResponse = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `token ${token}`,
-                                'Accept': 'application/vnd.github.v3+json'
-                            }
-                        });
-                        if (checkResponse.ok) {
-                            const data = await checkResponse.json();
-                            sha = data.sha;
-                        }
-                    } catch (e) {
-                        // Archivo no existe, continuamos sin sha
-                    }
-
-                    // Subir archivo a GitHub
-                    const body = {
-                        message: `Agregar/Actualizar registros médicos - ${date.toLocaleString('es-GT')}`,
-                        content: base64data,
-                        branch: branch
-                    };
-
-                    if (sha) {
-                        body.sha = sha; // Si existe, actualizamos
-                    }
-
-                    const response = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(body)
+            // Crear links Centro → Ramo
+            Object.entries(conexiones).forEach(([centro, ramos]) => {
+                const produccionCentro = produccionData[centro];
+                ramos.forEach(ramo => {
+                    const participacionRamo = ramoParticipacion[ramo] || 1;
+                    const valor = (produccionCentro * participacionRamo / 100) / ramos.length;
+                    links.push({
+                        source: nodeMap[centro],
+                        target: nodeMap[ramo],
+                        value: Math.max(valor, 0.1),
+                        color: ramoColors[ramo] ? ramoColors[ramo] + '50' : 'rgba(189, 195, 199, 0.3)',
+                        ramo: ramo
                     });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        
-                        // También descargar localmente
-                        XLSX.writeFile(workbook, filename);
-                        
-                        showAlert(`✅ Archivo exportado localmente y subido a GitHub!\n📁 ${path}`, 'success');
-                    } else {
-                        const error = await response.json();
-                        showAlert(`❌ Error al subir a GitHub: ${error.message}`, 'danger');
-                    }
-                } catch (error) {
-                    showAlert(`❌ Error: ${error.message}`, 'danger');
-                }
-            };
-            
-            reader.readAsDataURL(blob);
-        });
-
-        // ============================================
-        // DASHBOARD - GRÁFICAS Y ESTADÍSTICAS
-        // ============================================
-
-        function updateDashboard() {
-            updateStatistics();
-            updateCharts();
-        }
-
-        function updateStatistics() {
-            const totalPacientes = records.length;
-            const conDPI = records.filter(r => r.dpi && r.dpi.trim() !== '').length;
-            const sinDPI = totalPacientes - conDPI;
-            const conProducto = records.filter(r => r.productoFinca === 'SI').length;
-
-            // Calcular mayores y menores de edad
-            let mayores = 0;
-            let menores = 0;
-            const today = new Date();
-            
-            records.forEach(r => {
-                if (r.fechaNacimiento && r.fechaNacimiento.trim() !== '') {
-                    const birthDate = new Date(r.fechaNacimiento);
-                    const age = today.getFullYear() - birthDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDate.getMonth();
-                    
-                    const ageAdjusted = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) 
-                        ? age - 1 
-                        : age;
-                    
-                    if (ageAdjusted >= 18) {
-                        mayores++;
-                    } else {
-                        menores++;
-                    }
-                }
-            });
-
-            document.getElementById('totalPacientes').textContent = totalPacientes;
-            document.getElementById('conDPI').textContent = conDPI;
-            document.getElementById('sinDPI').textContent = sinDPI;
-            document.getElementById('conProductoFinca').textContent = conProducto;
-            document.getElementById('mayoresEdad').textContent = mayores;
-            document.getElementById('menoresEdad').textContent = menores;
-        }
-
-        function updateCharts() {
-            createChart1(); // Medio de Difusión
-            createChart2(); // Leads (DPI)
-            createChart3(); // Ocupación
-            createChart4(); // Especialidad
-            createChart6(); // Mayores vs Menores de Edad
-            createChart5(); // Producto Finca
-        }
-
-        // Chart 1: Medio de Difusión
-        function createChart1() {
-            const ctx = document.getElementById('chart1').getContext('2d');
-            
-            const comoEnteroData = {};
-            records.forEach(r => {
-                const medio = r.comoEntero || 'NO ESPECIFICADO';
-                comoEnteroData[medio] = (comoEnteroData[medio] || 0) + 1;
-            });
-
-            if (charts.chart1) charts.chart1.destroy();
-            
-            charts.chart1 = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(comoEnteroData),
-                    datasets: [{
-                        label: 'Número de Pacientes',
-                        data: Object.values(comoEnteroData),
-                        backgroundColor: [
-                            'rgba(44, 62, 80, 0.85)',      // Gris azulado oscuro
-                            'rgba(52, 152, 219, 0.85)',    // Azul brillante
-                            'rgba(214, 137, 16, 0.85)',    // Naranja dorado
-                            'rgba(22, 160, 133, 0.85)',    // Verde turquesa
-                            'rgba(142, 68, 173, 0.85)'     // Morado suave
-                        ],
-                        borderColor: [
-                            'rgba(44, 62, 80, 1)',
-                            'rgba(52, 152, 219, 1)',
-                            'rgba(214, 137, 16, 1)',
-                            'rgba(22, 160, 133, 1)',
-                            'rgba(142, 68, 173, 1)'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
-                            padding: 12,
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(52, 152, 219, 0.8)',
-                            borderWidth: 1
-                        },
-                        datalabels: {
-                            color: '#2c3e50',
-                            font: {
-                                weight: 'bold',
-                                size: 13
-                            },
-                            anchor: 'end',
-                            align: 'end',
-                            offset: 4,
-                            formatter: (value) => value
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                color: '#555',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                color: '#555',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // Chart 2: Leads (Con DPI vs Sin DPI)
-        function createChart2() {
-            const ctx = document.getElementById('chart2').getContext('2d');
-            
-            const conDPI = records.filter(r => r.dpi && r.dpi.trim() !== '').length;
-            const sinDPI = records.length - conDPI;
-
-            if (charts.chart2) charts.chart2.destroy();
-            
-            charts.chart2 = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['CON DPI', 'SIN DPI'],
-                    datasets: [{
-                        label: 'Número de Pacientes',
-                        data: [conDPI, sinDPI],
-                        backgroundColor: [
-                            'rgba(39, 174, 96, 0.85)',     // Verde oscuro
-                            'rgba(192, 57, 43, 0.85)'      // Rojo oscuro
-                        ],
-                        borderColor: [
-                            'rgba(39, 174, 96, 1)',
-                            'rgba(192, 57, 43, 1)'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
-                            padding: 12,
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(52, 152, 219, 0.8)',
-                            borderWidth: 1
-                        },
-                        datalabels: {
-                            color: '#2c3e50',
-                            font: {
-                                weight: 'bold',
-                                size: 14
-                            },
-                            anchor: 'end',
-                            align: 'end',
-                            offset: 4,
-                            formatter: (value) => value
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                color: '#555',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#555',
-                                font: {
-                                    size: 11,
-                                    weight: '600'
-                                }
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // Chart 3: Total por Ocupación
-        function createChart3() {
-            const ctx = document.getElementById('chart3').getContext('2d');
-            
-            const ocupacionData = {};
-            records.forEach(r => {
-                const ocupacion = r.ocupacion || 'NO ESPECIFICADO';
-                ocupacionData[ocupacion] = (ocupacionData[ocupacion] || 0) + 1;
-            });
-
-            if (charts.chart3) charts.chart3.destroy();
-            
-            const colors = [
-                'rgba(44, 62, 80, 0.85)',
-                'rgba(52, 152, 219, 0.85)',
-                'rgba(39, 174, 96, 0.85)',
-                'rgba(214, 137, 16, 0.85)',
-                'rgba(142, 68, 173, 0.85)',
-                'rgba(192, 57, 43, 0.85)',
-                'rgba(127, 140, 141, 0.85)'
-            ];
-            
-            const borderColors = [
-                'rgba(44, 62, 80, 1)',
-                'rgba(52, 152, 219, 1)',
-                'rgba(39, 174, 96, 1)',
-                'rgba(214, 137, 16, 1)',
-                'rgba(142, 68, 173, 1)',
-                'rgba(192, 57, 43, 1)',
-                'rgba(127, 140, 141, 1)'
-            ];
-            
-            charts.chart3 = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(ocupacionData),
-                    datasets: [{
-                        label: 'Número de Pacientes',
-                        data: Object.values(ocupacionData),
-                        backgroundColor: colors.slice(0, Object.keys(ocupacionData).length),
-                        borderColor: borderColors.slice(0, Object.keys(ocupacionData).length),
-                        borderWidth: 2,
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
-                            padding: 12,
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(52, 152, 219, 0.8)',
-                            borderWidth: 1
-                        },
-                        datalabels: {
-                            color: '#2c3e50',
-                            font: {
-                                weight: 'bold',
-                                size: 13
-                            },
-                            anchor: 'end',
-                            align: 'end',
-                            offset: 4,
-                            formatter: (value) => value
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                color: '#555',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#555',
-                                maxRotation: 45,
-                                minRotation: 45,
-                                font: {
-                                    size: 10
-                                }
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // Chart 4: Total por Especialidad
-        function createChart4() {
-            const ctx = document.getElementById('chart4').getContext('2d');
-            
-            const especialidadData = {};
-            records.forEach(r => {
-                const especialidad = r.especialidad || 'NO ESPECIFICADO';
-                especialidadData[especialidad] = (especialidadData[especialidad] || 0) + 1;
-            });
-
-            if (charts.chart4) charts.chart4.destroy();
-            
-            charts.chart4 = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(especialidadData),
-                    datasets: [{
-                        label: 'Número de Pacientes',
-                        data: Object.values(especialidadData),
-                        backgroundColor: [
-                            'rgba(214, 137, 16, 0.85)',    // Naranja dorado
-                            'rgba(52, 152, 219, 0.85)',    // Azul brillante
-                            'rgba(192, 57, 43, 0.85)',     // Rojo oscuro
-                            'rgba(39, 174, 96, 0.85)'      // Verde oscuro
-                        ],
-                        borderColor: [
-                            'rgba(214, 137, 16, 1)',
-                            'rgba(52, 152, 219, 1)',
-                            'rgba(192, 57, 43, 1)',
-                            'rgba(39, 174, 96, 1)'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
-                            padding: 12,
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(52, 152, 219, 0.8)',
-                            borderWidth: 1
-                        },
-                        datalabels: {
-                            color: '#2c3e50',
-                            font: {
-                                weight: 'bold',
-                                size: 14
-                            },
-                            anchor: 'end',
-                            align: 'end',
-                            offset: 4,
-                            formatter: (value) => value
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                color: '#555',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#555',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // Chart 5: Producto con Banco de Antigua (Pie Chart)
-        function createChart5() {
-            const ctx = document.getElementById('chart5').getContext('2d');
-            
-            const conProducto = records.filter(r => r.productoFinca === 'SI').length;
-            const sinProducto = records.filter(r => r.productoFinca === 'NO').length;
-            const total = conProducto + sinProducto;
-
-            if (charts.chart5) charts.chart5.destroy();
-            
-            charts.chart5 = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['NO', 'SI'],
-                    datasets: [{
-                        data: [sinProducto, conProducto],
-                        backgroundColor: [
-                            'rgba(127, 140, 141, 0.85)',   // Gris medio
-                            'rgba(39, 174, 96, 0.85)'      // Verde oscuro
-                        ],
-                        borderColor: [
-                            'rgba(127, 140, 141, 1)',
-                            'rgba(39, 174, 96, 1)'
-                        ],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: {
-                                    size: 13,
-                                    weight: '600'
-                                },
-                                color: '#555',
-                                padding: 15
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
-                            padding: 12,
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(52, 152, 219, 0.8)',
-                            borderWidth: 1,
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${label}: ${value} (${percentage}%)`;
-                                }
-                            }
-                        },
-                        datalabels: {
-                            color: '#fff',
-                            font: {
-                                weight: 'bold',
-                                size: 16
-                            },
-                            formatter: (value, ctx) => {
-                                if (value === 0) return '';
-                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                return `${value}\n(${percentage}%)`;
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // Chart 6: Mayores vs Menores de Edad
-        function createChart6() {
-            const ctx = document.getElementById('chart6').getContext('2d');
-            
-            let mayores = 0;
-            let menores = 0;
-            
-            const today = new Date();
-            
-            records.forEach(r => {
-                if (r.fechaNacimiento && r.fechaNacimiento.trim() !== '') {
-                    const birthDate = new Date(r.fechaNacimiento);
-                    const age = today.getFullYear() - birthDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDate.getMonth();
-                    
-                    // Ajuste para edad exacta
-                    const ageAdjusted = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) 
-                        ? age - 1 
-                        : age;
-                    
-                    if (ageAdjusted >= 18) {
-                        mayores++;
-                    } else {
-                        menores++;
-                    }
-                }
-            });
-
-            if (charts.chart6) charts.chart6.destroy();
-            
-            charts.chart6 = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Mayores de Edad (18+)', 'Menores de Edad (<18)'],
-                    datasets: [{
-                        label: 'Número de Pacientes',
-                        data: [mayores, menores],
-                        backgroundColor: [
-                            'rgba(44, 62, 80, 0.85)',      // Gris azulado oscuro
-                            'rgba(214, 137, 16, 0.85)'     // Naranja dorado
-                        ],
-                        borderColor: [
-                            'rgba(44, 62, 80, 1)',
-                            'rgba(214, 137, 16, 1)'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
-                            padding: 12,
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(52, 152, 219, 0.8)',
-                            borderWidth: 1,
-                            callbacks: {
-                                label: function(context) {
-                                    const total = mayores + menores;
-                                    const percentage = total > 0 ? ((context.parsed.y / total) * 100).toFixed(1) : 0;
-                                    return `Pacientes: ${context.parsed.y} (${percentage}%)`;
-                                }
-                            }
-                        },
-                        datalabels: {
-                            color: '#2c3e50',
-                            font: {
-                                weight: 'bold',
-                                size: 14
-                            },
-                            anchor: 'end',
-                            align: 'end',
-                            offset: 4,
-                            formatter: (value) => {
-                                const total = mayores + menores;
-                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                return `${value} (${percentage}%)`;
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                color: '#555',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#555',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // ============================================
-        // EXPORTACIÓN DE GRÁFICAS
-        // ============================================
-
-        function exportChartToImage(chartId) {
-            const container = document.getElementById(`${chartId}Container`);
-            
-            html2canvas(container, {
-                scale: 2,
-                backgroundColor: '#ffffff'
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `grafica_${chartId}_${Date.now()}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                showAlert('✅ Gráfica exportada como imagen!', 'success');
-            });
-        }
-
-        function exportChartToPdf(chartId) {
-            const container = document.getElementById(`${chartId}Container`);
-            
-            html2canvas(container, {
-                scale: 2,
-                backgroundColor: '#ffffff'
-            }).then(canvas => {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'px',
-                    format: [canvas.width, canvas.height]
                 });
-                
-                const imgData = canvas.toDataURL('image/png');
-                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-                pdf.save(`grafica_${chartId}_${Date.now()}.pdf`);
-                showAlert('✅ Gráfica exportada como PDF!', 'success');
             });
+
+            // Crear links Ramo → Mercado
+            Object.entries(mercadoRamoData).forEach(([ramo, mercados]) => {
+                Object.entries(mercados).forEach(([mercado, porcentaje]) => {
+                    if (porcentaje > 0) {
+                        const participacionRamo = ramoParticipacion[ramo] || 1;
+                        const totalProduccion = 148;
+                        const valor = (totalProduccion * participacionRamo / 100) * (porcentaje / 100);
+                        links.push({
+                            source: nodeMap[ramo],
+                            target: nodeMap[mercado],
+                            value: Math.max(valor, 0.1),
+                            color: ramoColors[ramo] ? ramoColors[ramo] + '50' : 'rgba(189, 195, 199, 0.3)',
+                            ramo: ramo
+                        });
+                    }
+                });
+            });
+
+            const data = [{
+                type: "sankey",
+                orientation: "h",
+                node: {
+                    pad: 15,
+                    thickness: 20,
+                    line: {color: "black", width: 0.5},
+                    label: nodes.map(n => n.name),
+                    color: nodes.map(n => n.color),
+                    customdata: nodes.map(n => n.name),
+                    hovertemplate: '<b>%{customdata}</b><br>Producción: Q.%{value:.2f}M<extra></extra>'
+                },
+                link: {
+                    source: links.map(l => l.source),
+                    target: links.map(l => l.target),
+                    value: links.map(l => l.value),
+                    color: links.map(l => l.color),
+                    customdata: links.map(l => l.ramo || 'Flujo'),
+                    hovertemplate: '<b>%{customdata}</b><br>Flujo: Q.%{value:.2f}M<extra></extra>'
+                }
+            }];
+
+            const layout = {
+                title: "",
+                font: {size: 11, family: 'Segoe UI'},
+                height: 850,
+                margin: {l: 10, r: 10, t: 20, b: 20}
+            };
+
+            Plotly.newPlot('sankeyCompleto', data, layout, {responsive: true});
         }
 
-        // Exportar todo el dashboard
-        document.getElementById('exportAllPdfBtn').addEventListener('click', () => {
-            const dashboardContainer = document.querySelector('.dashboard-container');
-            
-            html2canvas(dashboardContainer, {
-                scale: 1.5,
-                backgroundColor: '#ffffff'
-            }).then(canvas => {
-                const { jsPDF } = window.jspdf;
-                const imgWidth = 210; // A4 width in mm
-                const pageHeight = 297; // A4 height in mm
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                let position = 0;
-                
-                const imgData = canvas.toDataURL('image/png');
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-                
-                while (heightLeft >= 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
-                
-                pdf.save(`dashboard_completo_${Date.now()}.pdf`);
-                showAlert('✅ Dashboard completo exportado como PDF!', 'success');
-            });
-        });
-
-        document.getElementById('exportAllImageBtn').addEventListener('click', () => {
-            const dashboardContainer = document.querySelector('.dashboard-container');
-            
-            html2canvas(dashboardContainer, {
-                scale: 2,
-                backgroundColor: '#ffffff'
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `dashboard_completo_${Date.now()}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                showAlert('✅ Dashboard completo exportado como imagen!', 'success');
-            });
-        });
-
-        // ============================================
-        // INICIALIZACIÓN
-        // ============================================
-
-        // Event listeners para sincronización
-        document.getElementById('syncNowBtn').addEventListener('click', syncNow);
-        document.getElementById('autoSyncToggle').addEventListener('click', toggleAutoSync);
-
-        // Función de inicialización asíncrona
-        async function init() {
-            // Cargar configuración
-            loadGithubConfig();
-            loadAutoSyncState();
-            
-            // Intentar cargar desde GitHub primero
-            const config = getGithubConfig();
-            if (config) {
-                const success = await loadDataFromGithub();
-                if (!success) {
-                    // Si falla, cargar desde localStorage
-                    loadRecordsFromLocalStorage();
-                }
-            } else {
-                // Si no hay configuración de GitHub, cargar desde localStorage
-                loadRecordsFromLocalStorage();
-                updateSyncStatus('offline', 'Configura GitHub para sincronizar entre dispositivos');
-            }
-            
-            // Renderizar
-            renderTable();
-            updateAtendidosFieldsState('main');
-            
-            // Activar primer tab
-            if (tabs.length > 0) {
-                tabs[0].click();
-            }
-        }
-
-        // Iniciar
-        init();
+        // Crear visualización al cargar
+        window.onload = function() {
+            createSankeyCompleto();
+        };
     </script>
 </body>
 </html>
